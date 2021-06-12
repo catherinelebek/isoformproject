@@ -47,7 +47,7 @@ table(colnames(primary) == colnames(recurrent))
 # expression delta calculated for each patient and transcript
 # this will enable me to run a paired t-test for each transcript
 
-dat_inc <- length(dat)
+dat_inc <- nrow(dat)
 
 dat_list <- vector(mode = "list", length = dat_inc) # create empty list
 names(dat_list) <- rownames(dat[1:dat_inc,]) # name list elements as transcripts
