@@ -1,6 +1,12 @@
+# setting file paths
+
+intputdata <- file.path("/nobackup/bs20chlb","inputdata")
+outputdata <- file.path("/nobackup/bs20chlb","outputdata")
+
 # import count data 
 
-dat <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
+setwd(inputdata)
+dat <- read.delim("PvR_isoformCounts_all.txt", header = TRUE)
 dat_full <- dat
 head(dat_full)
 
@@ -13,7 +19,7 @@ head(dat)
 
 # remove unwanted samples
 
-patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = F)
+patients.remove <- read.delim("patients_remove.txt", header = F)
 
 # convert list to vector
 
@@ -81,6 +87,7 @@ for (i in 1:length(dat_list)){
   corr[i] <- cor(dat_list[[i]][,1],dat_list[[i]][,2])
 }
 
+setwd(outputdata)
 write(corr, "correlations_per_patient.txt")
 
 # do a paired t-test for each transcript
