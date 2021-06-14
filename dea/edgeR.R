@@ -62,8 +62,8 @@ y <- estimateGLMCommonDisp(y, design)
 # print out dispersion estimate to validate this stage in code was reached
 
 cd <- y$common.dispersion
-setwd(outputdata)
-write(cd, "commondispersion.txt")
+
+write(cd, "/nobackup/bs20chlb/outputdata/commondispersion.txt")
 
 # estimate trended dispersion
 
