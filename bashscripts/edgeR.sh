@@ -8,13 +8,13 @@
 #$ -l h_vmem=12G
 
 # Ask for output and error files to be sent to a specific folder
-#$ -o /nobackup/bs20chlb/outdir/job-$JOB_ID.stdout
-#$ -e /nobackup/bs20chlb/outdir/job-$JOB_ID.stderr
+#$ -o /nobackup/bs20chlb/outdir/edgeR/job-$JOB_ID.stdout
+#$ -e /nobackup/bs20chlb/outdir/edgeR/job-$JOB_ID.stderr
 
 # Send emails when job starts and ends
 #$ -m be
 
 # Now run the job
 module load R
-R CMD BATCH /nobackup/bs20chlb/scripts/isoformproject/dea/edgeR.R /nobackup/bs20chlb/outdir/R-${JOB_ID}.Rout
+R CMD BATCH /nobackup/bs20chlb/scripts/isoformproject/dea/edgeR.R /nobackup/bs20chlb/edgeR/outdir/R-${JOB_ID}.Rout
 
