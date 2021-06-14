@@ -16,7 +16,7 @@ head(dat)
 
 # remove unwanted samples
 
-patients.remove <- read.delim("/nobackup/bs20chlb/intputdata/patients_remove.txt", header = F)
+patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = F)
 
 # convert list to vector
 
