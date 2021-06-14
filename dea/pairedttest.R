@@ -1,11 +1,6 @@
-# setting file paths
-
-intputdata <- file.path("/nobackup/bs20chlb","inputdata")
-outputdata <- file.path("/nobackup/bs20chlb","outputdata")
-
 # import count data 
 
-setwd(inputdata)
+setwd("/nobackup/bs20chlb/inputdata")
 dat <- read.delim("PvR_isoformCounts_all.txt", header = TRUE)
 dat_full <- dat
 head(dat_full)
@@ -90,7 +85,7 @@ for (i in 1:length(dat_list)){
   corr[i] <- cor(dat_list[[i]][,1],dat_list[[i]][,2])
 }
 
-setwd(outputdata) # change working directory to output directory
+setwd("/nobackup/bs20chlb/outputdata") # change working directory to output directory
 
 write(corr, "correlations_per_patient.txt")
 
