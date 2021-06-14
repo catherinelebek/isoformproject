@@ -7,10 +7,14 @@
 # Ask for some memory (by default, 1G, without a request)
 #$ -l h_vmem=2G
 
+# Ask for output and error files to be sent to a specific folder
+#$ -o /nobackup/bs20chlb/outdir/job-$JOB_ID.stdout
+#$ -e /nobackup/bs20chlb/outdir/job-$JOB_ID.stderr
+
 # Send emails when job starts and ends
 #$ -m be
 
 # Now run the job
 module load R
-R CMD BATCH Paired_t-test.R
+R CMD BATCH /nobackup/bs20chlb/scripts/isoformproject/dea/pairedttest.R /nobackup/bs20chlb/outdir/R-${JOB_ID}.Rout
 
