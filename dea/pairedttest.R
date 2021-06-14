@@ -12,7 +12,10 @@ head(dat_full)
 
 # rearrange columns
 
+# remove gene name and gene type columns
 dat <- dat_full[,c(-10,-11)]
+
+# set the rownames as the transcript names
 rownames(dat) <- dat[,1]
 dat <- dat[,c(-1)]
 head(dat)
@@ -25,7 +28,7 @@ patients.remove <- read.delim("patients_remove.txt", header = F)
 
 patients.remove <- as.vector(t(patients.remove))
 
-# filter
+# filter out samples excluded due to metadata values
 
 keep <- !sub("_.*","",colnames(dat)) %in% patients.remove
 dat <- dat[,keep]
@@ -87,7 +90,8 @@ for (i in 1:length(dat_list)){
   corr[i] <- cor(dat_list[[i]][,1],dat_list[[i]][,2])
 }
 
-setwd(outputdata)
+setwd(outputdata) # change working directory to output directory
+
 write(corr, "correlations_per_patient.txt")
 
 # do a paired t-test for each transcript
