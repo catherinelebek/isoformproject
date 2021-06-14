@@ -2,9 +2,15 @@
 
 library(edgeR)
 
+# setting file paths
+
+intputdata <- file.path("/nobackup/bs20chlb","inputdata")
+outputdata <- file.path("/nobackup/bs20chlb","outputdata")
+
 # import count data
 
-dat <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
+setwd(intputdata)
+dat <- read.delim("PvR_isoformCounts_all.txt", header = TRUE)
 
 # rearrange columns
 
@@ -18,7 +24,8 @@ y <- DGEList(counts=dat[,4:ncol(dat)], genes=dat[,1:3])
 
 # import list of patients to remove
 
-patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = F)
+patients.remove <- read.delim("patients_remove.txt", header = F)
+setwd(outputdata)
 
 # convert list to vector
 
