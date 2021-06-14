@@ -16,5 +16,5 @@
 
 # Now run the job
 module load R
-R CMD BATCH /nobackup/bs20chlb/scripts/isoformproject/dea/edgeR.R /nobackup/bs20chlb/edgeR/outdir/R-${JOB_ID}.Rout
+R CMD BATCH /nobackup/bs20chlb/scripts/isoformproject/dea/edgeR.R /nobackup/bs20chlb/outdir/edgeR/R-${JOB_ID}.Rout
 
