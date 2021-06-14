@@ -4,15 +4,11 @@ library(edgeR)
 
 # import count data
 
-dat <- read.delim("PvR_isoformCounts_all.txt", header = TRUE)
+dat <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
 
 # rearrange columns
 
 dat <- dat[,c(1,10,11,2:9,12:ncol(dat))]
-
-# remove rows that add up to zero
-
-dat <- dat[rowSums(dat[,4:ncol(dat)]) != 0,]
 
 # create DGEList data class
 
@@ -22,7 +18,7 @@ y <- DGEList(counts=dat[,4:ncol(dat)], genes=dat[,1:3])
 
 # import list of patients to remove
 
-patients.remove <- read.delim("patients_remove.txt", header = F)
+patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = F)
 
 # convert list to vector
 
