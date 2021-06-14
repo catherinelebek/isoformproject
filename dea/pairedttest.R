@@ -1,7 +1,6 @@
 # import count data 
 
-setwd("/nobackup/bs20chlb/inputdata")
-dat <- read.delim("PvR_isoformCounts_all.txt", header = TRUE)
+dat <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
 dat_full <- dat
 head(dat_full)
 
@@ -17,7 +16,7 @@ head(dat)
 
 # remove unwanted samples
 
-patients.remove <- read.delim("patients_remove.txt", header = F)
+patients.remove <- read.delim("/nobackup/bs20chlb/intputdata/patients_remove.txt", header = F)
 
 # convert list to vector
 
@@ -85,9 +84,7 @@ for (i in 1:length(dat_list)){
   corr[i] <- cor(dat_list[[i]][,1],dat_list[[i]][,2])
 }
 
-setwd("/nobackup/bs20chlb/outputdata") # change working directory to output directory
-
-write(corr, "correlations_per_patient.txt")
+write(corr, "/nobackup/bs20chlb/outputdata/correlations_per_patient.txt")
 
 # do a paired t-test for each transcript
 # output values into dataframe
@@ -123,4 +120,4 @@ ttest <- ttest[,c(10,11,1,9,2:8)]
 # reorder by increasing p-value
 
 ttest <- ttest[order(ttest$adj.pval),]
-write.table(ttest, "pairedttestresults.csv")
+write.table(ttest, "/nobackup/bs20chlb/outputdata/pairedttestresults.csv")
