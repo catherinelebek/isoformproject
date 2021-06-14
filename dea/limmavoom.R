@@ -29,6 +29,11 @@ patients.remove <- as.vector(t(patients.remove))
 keep <- !sub("_.*","",rownames(y$samples)) %in% patients.remove
 y <- y[,keep]
 
+# remove rows that add up to zero
+
+keep <- rowSums(y$count) != 0
+y <- y[keep,]
+
 # TMM normalisation
 
 y <- calcNormFactors(y)
