@@ -2,15 +2,9 @@
 
 library(edgeR)
 
-# setting file paths
-
-intputdata <- file.path("/nobackup/bs20chlb","inputdata")
-outputdata <- file.path("/nobackup/bs20chlb","outputdata")
-
 # import count data
 
-setwd(intputdata)
-dat <- read.delim("PvR_isoformCounts_all.txt", header = TRUE)
+dat <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
 
 # rearrange columns
 
@@ -30,7 +24,7 @@ y <- DGEList(counts=dat[,4:ncol(dat)], genes=dat[,1:3])
 
 # import list of patients to remove
 
-patients.remove <- read.delim("patients_remove.txt", header = FALSE)
+patients.remove <- read.delim("/nobackup/bs20chlb/intputdata/patients_remove.txt", header = FALSE)
 
 # convert list to vector
 
@@ -96,7 +90,7 @@ lrt <- glmLRT(fit)
 # print results of top 10 most differentially expressed transcripts 
 
 res <- topTags(lrt)
-write.table(res, "edgeRresults.csv")
+write.table(res, "/nobackup/bs20chlb/outputdata/edgeRresults.csv")
 
 # total number of differentially expression transcripts
 
