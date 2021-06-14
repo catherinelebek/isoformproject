@@ -1,6 +1,6 @@
 # import count data 
 
-dat <- read.delim("PvR_isoformCounts_all.txt", header = TRUE)
+dat <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
 dat_full <- dat
 head(dat_full)
 
@@ -13,7 +13,7 @@ head(dat)
 
 # remove unwanted samples
 
-patients.remove <- read.delim("patients_remove.txt", header = F)
+patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = F)
 
 # convert list to vector
 
@@ -117,4 +117,4 @@ ttest <- ttest[,c(10,11,1,9,2:8)]
 # reorder by increasing p-value
 
 ttest <- ttest[order(ttest$adj.pval),]
-write.table(ttest, "paired_ttest_results.csv")
+write.table(ttest, "pairedttestresults.csv")
