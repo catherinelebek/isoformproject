@@ -24,7 +24,7 @@ y <- DGEList(counts=dat[,4:ncol(dat)], genes=dat[,1:3])
 
 # import list of patients to remove
 
-patients.remove <- read.delim("/nobackup/bs20chlb/intputdata/patients_remove.txt", header = FALSE)
+patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
 
 # convert list to vector
 
