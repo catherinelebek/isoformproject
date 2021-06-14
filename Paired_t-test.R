@@ -1,4 +1,4 @@
-# import count data
+# import count data 
 
 dat <- read.delim("PvR_isoformCounts_all.txt", header = TRUE)
 dat_full <- dat
