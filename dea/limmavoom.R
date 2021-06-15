@@ -77,7 +77,11 @@ fit <- eBayes(fit)
 
 # print out table of top most differentially expression transcripts
 
-topTable(fit, coef = "tumour.typeR")
+restop <- topTable(fit, coef = "tumour.typeR")
+
+# write results to a file
+
+write.table(restop, "/nobackup/bs20chlb/outputdata/limmaresults.csv")
 
 plotMDS(y, labels = patient, col = as.numeric(tumour.type))
 
