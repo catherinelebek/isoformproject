@@ -1,25 +1,28 @@
 # import count data 
 
-dat <- read.delim("PvR_isoformCounts_all.txt", header = TRUE)
+dat <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
 dat_full <- dat
 head(dat_full)
 
 # rearrange columns
 
+# remove gene name and gene type columns
 dat <- dat_full[,c(-10,-11)]
+
+# set the rownames as the transcript names
 rownames(dat) <- dat[,1]
 dat <- dat[,c(-1)]
 head(dat)
 
 # remove unwanted samples
 
-patients.remove <- read.delim("patients_remove.txt", header = F)
+patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = F)
 
 # convert list to vector
 
 patients.remove <- as.vector(t(patients.remove))
 
-# filter
+# filter out samples excluded due to metadata values
 
 keep <- !sub("_.*","",colnames(dat)) %in% patients.remove
 dat <- dat[,keep]
@@ -81,7 +84,7 @@ for (i in 1:length(dat_list)){
   corr[i] <- cor(dat_list[[i]][,1],dat_list[[i]][,2])
 }
 
-write(corr, "correlations_per_patient.txt")
+write(corr, "/nobackup/bs20chlb/outputdata/correlations_per_patient.txt")
 
 # do a paired t-test for each transcript
 # output values into dataframe
@@ -117,4 +120,4 @@ ttest <- ttest[,c(10,11,1,9,2:8)]
 # reorder by increasing p-value
 
 ttest <- ttest[order(ttest$adj.pval),]
-write.table(ttest, "paired_ttest_results.csv")
+write.table(ttest, "/nobackup/bs20chlb/outputdata/pairedttestresults.csv")
