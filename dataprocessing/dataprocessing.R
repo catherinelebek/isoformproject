@@ -4,12 +4,12 @@ library(edgeR)
 
 # import count data
 
-datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/temp/PvR_isoformCounts_all.txt", header = TRUE)
+datfull <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
 dat <- datfull
 
 # import metadata
 
-metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/temp/Metadata.csv", header = TRUE)
+metadata <- read.csv("/nobackup/bs20chlb/inputdata/Metadata.csv", header = TRUE)
 
 # rearrange columns
 
@@ -41,7 +41,7 @@ table(y$samples$patientid %in% metadata$Patient.ID)
 
 # import list of patients to remove
 
-patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/temp/patients_remove.txt", header = FALSE)
+patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
 
 # convert list to vector
 
