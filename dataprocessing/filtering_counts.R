@@ -2,16 +2,6 @@
 
 library(edgeR)
 
-# import count data
-
-<<<<<<< HEAD:dataprocessing/dataprocessing.R
-datfull <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
-dat <- datfull
-
-# import metadata
-
-metadata <- read.csv("/nobackup/bs20chlb/inputdata/Metadata.csv", header = TRUE)
-=======
 # datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
 datfull.counts <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
 
@@ -37,7 +27,6 @@ below30 <- read.delim("/nobackup/bs20chlb/inputdata/below30.txt", header = FALSE
 # covert datamframe to vector
 
 below30 <- as.vector(t(below30))
->>>>>>> 14de9b353a840bb7313917a39fd2257caebf278c:dataprocessing/filtering_counts.R
 
 # rearrange columns
 
@@ -67,14 +56,9 @@ y$samples$tumourtype <- ifelse(y$samples$tumourtype == "Primary","P",ifelse(y$sa
 
 table(y$samples$patientid %in% metadata$Patient.ID)
 
-<<<<<<< HEAD:dataprocessing/dataprocessing.R
-# import list of patients to remove
 
-patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
-=======
 # filter DGEList using the samples object
 # expect to go from 176 samples to 120 samples
->>>>>>> 14de9b353a840bb7313917a39fd2257caebf278c:dataprocessing/filtering_counts.R
 
 keep <- !y$sample$patientid %in% patients.remove # indexes for patient samples not in the patient remove file
 y <- y[,keep] # subsetting y
