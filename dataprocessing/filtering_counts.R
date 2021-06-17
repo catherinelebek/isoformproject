@@ -4,18 +4,18 @@ library(edgeR)
 
 # import count data
 
-datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
-# datfull.counts <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
+# datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
+datfull.counts <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
 
 # import metadata
 
-metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/Metadata.csv", header = TRUE)
-# metadata <- read.csv("/nobackup/bs20chlb/inputdata/Metadata.csv", header = TRUE)
+# metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/Metadata.csv", header = TRUE)
+metadata <- read.csv("/nobackup/bs20chlb/inputdata/Metadata.csv", header = TRUE)
 
 # import list of patients to remove based on metadata values
 
-patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/patients_remove.txt", header = FALSE)
-# patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
+# patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/patients_remove.txt", header = FALSE)
+patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
 
 # convert to vector
 
@@ -23,8 +23,8 @@ patients.remove <- as.vector(t(patients.remove))
 
 # import list of patients to remove based on reads < 30m
 
-below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/below30.txt", header = FALSE)
-# below30 <- read.delim("/nobackup/bs20chlb/inputdata/below30.txt", header = FALSE)
+# below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/below30.txt", header = FALSE)
+below30 <- read.delim("/nobackup/bs20chlb/inputdata/below30.txt", header = FALSE)
 
 # covert datamframe to vector
 
@@ -152,8 +152,8 @@ length(keep) == nrow(y$counts)
 omitidx <- exprres$Overall == "Omit"
 omit <- y$genes[omitidx,1]
 
-write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/lowexpressionomit.csv")
+# write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/lowexpressionomit.csv")
 
-# write.table(omit, "/nobackup/bs20chlb/outputdata/lowexpressionomit.csv")
+write.table(omit, "/nobackup/bs20chlb/outputdata/lowexpressionomit.csv")
 
 
