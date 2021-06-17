@@ -115,7 +115,7 @@ for (i in 1:nrow(datfpkmrecurrent)){ # for every transcript
 colnames(exprres) <- c("Primary","Recurrent")
 exprres$Overall <- ifelse(exprres$Primary == 0 & exprres$Recurrent == 0, "Omit", "Include")
 
-table(exprres$Overall))
+table(exprres$Overall)
 
 
 # print list of transcripts to omit
