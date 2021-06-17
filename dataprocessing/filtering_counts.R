@@ -9,13 +9,13 @@ dat <- datfull.counts
 
 # import metadata
 
-# metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/Metadata.csv", header = TRUE)
-metadata <- read.csv("/nobackup/bs20chlb/inputdata/Metadata.csv", header = TRUE)
+metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/Metadata.csv", header = TRUE)
+# metadata <- read.csv("/nobackup/bs20chlb/inputdata/Metadata.csv", header = TRUE)
 
 # import list of patients to remove based on metadata values
 
-# patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/patients_remove.txt", header = FALSE)
-patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
+patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/patients_remove.txt", header = FALSE)
+# patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
 
 # convert to vector
 
@@ -23,8 +23,8 @@ patients.remove <- as.vector(t(patients.remove))
 
 # import list of patients to remove based on reads < 30m
 
-# below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/below30.txt", header = FALSE)
-below30 <- read.delim("/nobackup/bs20chlb/inputdata/below30.txt", header = FALSE)
+below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/below30.txt", header = FALSE)
+# below30 <- read.delim("/nobackup/bs20chlb/inputdata/below30.txt", header = FALSE)
 
 # covert datamframe to vector
 
@@ -39,6 +39,8 @@ c3 <- c1 - 1
 c4 <- c2 + 1
 dat <- dat[,c(c0,c1,c2,2:c3,c4:ncol(dat))]
 colnames(dat)
+
+dim(dat)
 
 # create DGEList data class
 # columns 4 to final column are counts per sample
@@ -79,22 +81,20 @@ y <- calcNormFactors(y)
 # covert to normalised counts
 
 ynorm <- cpm(y)
+rownames(ynorm) <- y$genes$EnsID
 
 # put all expression values in a vector
 
 ylist <- as.vector(ynorm, mode = "numeric")
 
+
 # remove normalised expression values of zero
 
 ylist <- ylist[ylist != 0]
-ylist1 <- ylist[ylist > 0.1]
-ylist2 <- ylist[ylist > 1]
-
-# pull out the lower quartile
 
 lowerq <- summary(ylist)[2]
-lowerq1 <- summary(ylist1)[2]
-lowerq2 <- summary(ylist2)[2]
+
+lowerq
 
 # now comes the tricky bit
 # I am going to split the ynorm object into primary and recurrent samples first
@@ -110,9 +110,13 @@ idx.recurrent <- y$samples$tumourtype == "R"
 
 ynormprimary <- ynorm[,idx.primary]
 
+dim(ynormprimary)
+
 # pull out ynorm columns corresponding to recurrent tumours
 
 ynormrecurrent <- ynorm[,idx.recurrent]
+
+dim(ynormrecurrent)
 
 # create new data frame to store % expression at least lower quartile for recurrent and primary tumours for each transcript
 
@@ -123,8 +127,8 @@ for (i in 1:nrow(ynormprimary)){ # for every transcript
   for (j in 1:ncol(ynormprimary)){ # take every patient
     temp[j] <- ynormprimary[i,j] >= lowerq # determine if the expression is higher or equal to the lower quartile
   }
-  temp <- sum(temp) / ncol(ynormprimary) # determine what % of all patiets have expression higher than or equal to the lower quartile
-  exprres[i,1] <- ifelse(temp >= 0.2, 1, 0) # determine is this % is great than or equal to 20%
+  res <- sum(temp) / ncol(ynormprimary) # determine what % of all patients have expression higher than or equal to the lower quartile
+  exprres[i,1] <- ifelse(res >= 0.2, 1, 0) # determine is this % is great than or equal to 20%
 }
 
 
@@ -133,28 +137,25 @@ for (i in 1:nrow(ynormrecurrent)){ # for every transcript
   for (j in 1:ncol(ynormrecurrent)){ # take every patient
     temp[j] <- ynormrecurrent[i,j] >= lowerq # determine if the expression is higher or equal to the lower quartile
   }
-  temp <- sum(temp) / ncol(ynormrecurrent) # determine what % of all patiets have expression higher than or equal to the lower quartile
-  exprres[i,2] <- ifelse(temp >= 0.2, 1, 0) # determine is this % is great than or equal to 20%
+  res <- sum(temp) / ncol(ynormrecurrent) # determine what % of all patiets have expression higher than or equal to the lower quartile
+  exprres[i,2] <- ifelse(res >= 0.2, 1, 0) # determine is this % is great than or equal to 20%
 }
 
 colnames(exprres) <- c("Primary","Recurrent")
 exprres$Overall <- ifelse(exprres$Primary == 0 & exprres$Recurrent == 0, "Omit", "Include")
 
-exprres
+table(exprres)
 
-keep <- exprres$Overall == "Include"
-
-# check that keep is the same length as y
-
-length(keep) == nrow(y$counts)
 
 # print list of transcripts to omit
 
 omitidx <- exprres$Overall == "Omit"
+
+length(omitidx) == nrow(y$genes)
+
 omit <- y$genes[omitidx,1]
 
 # write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/lowexpressionomit.csv")
 
 write.table(omit, "/nobackup/bs20chlb/outputdata/lowexpressionomit.csv")
-
 
