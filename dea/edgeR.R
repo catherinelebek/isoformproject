@@ -53,6 +53,8 @@ y <- estimateGLMTrendedDisp(y, design)
 
 y <- estimateGLMTagwiseDisp(y, design)
 
+save(y, file = "tagwisedisp.RData")
+
 # plot dispersions
 
 plotBCV(y)
