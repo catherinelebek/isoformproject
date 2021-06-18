@@ -42,7 +42,7 @@ names(dat_list) <- rownames(dat) # name list elements as transcripts
 
 for (i in 1:length(dat_list)){
   temp <- data.frame(matrix(ncol=4,nrow=ncol(primary)))
-  rownames(temp) <- colnames(primary))
+  rownames(temp) <- colnames(primary)
   colnames(temp) <- c("P","R","D","LFC")
   dat_list[[i]] <- temp
 }
