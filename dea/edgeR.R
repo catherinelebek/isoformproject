@@ -4,7 +4,7 @@ library(edgeR)
 
 # import count data
 
-dat <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_filtered.txt", header = TRUE)
+dat <- read.table("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_filtered.txt", header = TRUE)
 
 # create DGEList data class
 
