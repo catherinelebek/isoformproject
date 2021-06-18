@@ -23,7 +23,7 @@ samples <- rownames(y$samples)
 # extract patient ids from sample names and format as factors
 
 patient <- sub("_.*","",samples)
-patient <- factor(patient)
+patient <- as.factor(patient)
 
 # extract tumour type from sample names, convert all to "P" or "R" format, and format as factors
 
