@@ -1,6 +1,8 @@
 # import count data 
 
-dat <- read.table("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_filtered.txt", header = TRUE)
+dat.allcol <- read.table("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_filtered.txt", header = TRUE)
+
+dat <- dat.allcol
 
 # rearrange columns
 
@@ -94,7 +96,7 @@ ttest$adj.pval <- adj.pval # multiplicity adjustment
 
 # merge with data frame containing gene name and gene type
 
-ttest <- merge(ttest, dat_full[,c("EnsID","GeneName","GeneType")], by.x = "row.names", by.y = "EnsID")
+ttest <- merge(ttest, dat.allcol[,c("EnsID","GeneName","GeneType")], by.x = "row.names", by.y = "EnsID")
 rownames(ttest) <- ttest[,1]
 ttest <- ttest[,-1]
 ttest <- ttest[,c(10,11,1,9,2:8)]
