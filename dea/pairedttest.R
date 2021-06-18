@@ -1,35 +1,17 @@
 # import count data 
 
-dat <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_all.txt", header = TRUE)
-dat_full <- dat
-head(dat_full)
+dat <- read.table("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_filtered.txt", header = TRUE)
 
 # rearrange columns
 
 # remove gene name and gene type columns
-dat <- dat_full[,c(-10,-11)]
+
+dat <- dat[,c(-2,-3)]
 
 # set the rownames as the transcript names
 rownames(dat) <- dat[,1]
 dat <- dat[,c(-1)]
 head(dat)
-
-# remove unwanted samples
-
-patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = F)
-
-# convert list to vector
-
-patients.remove <- as.vector(t(patients.remove))
-
-# filter out samples excluded due to metadata values
-
-keep <- !sub("_.*","",colnames(dat)) %in% patients.remove
-dat <- dat[,keep]
-
-# remove rows that add up to zero
-
-dat <- dat[rowSums(dat[,1:ncol(dat)]) != 0,]
 
 # split data into primary and recurrent
 
@@ -53,14 +35,14 @@ table(colnames(primary) == colnames(recurrent))
 dat_inc <- nrow(dat)
 
 dat_list <- vector(mode = "list", length = dat_inc) # create empty list
-names(dat_list) <- rownames(dat[1:dat_inc,]) # name list elements as transcripts
+names(dat_list) <- rownames(dat) # name list elements as transcripts
 
 # add empty data frame to each list element, with a column for primary, recurrent, delta and LFC expression
 # and a row for every patient
 
 for (i in 1:length(dat_list)){
   temp <- data.frame(matrix(ncol=4,nrow=ncol(primary)))
-  rownames(temp) <- colnames(primary[1:ncol(primary)])
+  rownames(temp) <- colnames(primary))
   colnames(temp) <- c("P","R","D","LFC")
   dat_list[[i]] <- temp
 }
