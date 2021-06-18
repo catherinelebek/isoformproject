@@ -60,3 +60,6 @@ write.table(restop, "/nobackup/bs20chlb/outputdata/limmaresults.csv")
 
 plotMDS(y, labels = patient, col = as.numeric(tumour.type))
 
+
+
+
