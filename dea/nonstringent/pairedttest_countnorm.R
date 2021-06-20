@@ -1,6 +1,6 @@
 # import normalised count data
 
-dat.allcol <- read.table("/nobackup/bs20chlb/inputdata/PvR_isoformnormCounts_filtered_nonstringent.txt", header = TRUE)
+dat.allcol <- read.table("/nobackup/bs20chlb/inputdata/nonstringent/PvR_isoformnormCounts_filtered.txt", header = TRUE)
 
 dat <- dat.allcol
 
@@ -107,4 +107,4 @@ ttest <- ttest[,c(10,11,1,9,2:8)]
 # reorder by increasing p-value
 
 ttest <- ttest[order(ttest$adj.pval),]
-write.table(ttest, "/nobackup/bs20chlb/outputdata/pairedttestresults_normcounts.csv")
+write.table(ttest, "/nobackup/bs20chlb/outputdata/dea/nonstringent/pairedttestresults_normcounts.csv")
