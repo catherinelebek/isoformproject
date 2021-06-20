@@ -1,0 +1,138 @@
+---
+title: "Filtering Options"
+author: "Catherine Hogg"
+date: "18/06/2021"
+output: pdf_document
+---
+
+```{r libraryimport}
+
+library(knitr)
+
+```
+
+
+```{r transcriptsexcluded}
+
+datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
+
+full <- datfull.counts[,1]
+
+cpm.ex <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/lowexpressionomit.csv", header = TRUE, sep = " ")
+cpm.ex <- as.vector(t(cpm.ex))
+idx <- !full %in% cpm.ex
+cpm.inc <- full[idx]
+
+fpkm.inc <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/test_log2fc_all.txt", header = TRUE)
+fpkm.inc <- fpkm.inc[,1]
+idx <- !full %in% fpkm.inc
+fpkm.ex <- full[idx]
+
+n.cpm.inc <- length(cpm.inc)
+n.cpm.ex <- length(cpm.ex)
+n.fpkm.inc <- length(fpkm.inc)
+n.fpkm.ex <- length(fpkm.ex)
+
+
+results <- data.frame(Include = c(n.cpm.inc, n.fpkm.inc), Exclude = c(n.cpm.ex, n.fpkm.ex))
+rownames(results) <- c("CPM","FPKM")
+results$Total <- results$Include + results$Exclude
+results$ProportionExcluded <- results$Exclude/results$Total
+
+results
+knitr::kable(results)
+```
+
+```{r countstoexpressionvalues}
+
+# import count data
+
+dat <- datfull.counts
+
+# import metadata
+
+metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/Metadata.csv", header = TRUE)
+# metadata <- read.csv("/nobackup/bs20chlb/inputdata/Metadata.csv", header = TRUE)
+
+# import list of patients to remove based on metadata values
+
+patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/patients_remove.txt", header = FALSE)
+# patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
+
+# convert to vector
+
+patients.remove <- as.vector(t(patients.remove))
+
+# import list of patients to remove based on reads < 30m
+
+below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/below30.txt", header = FALSE)
+# below30 <- read.delim("/nobackup/bs20chlb/inputdata/below30.txt", header = FALSE)
+
+# covert datamframe to vector
+
+below30 <- as.vector(t(below30))
+
+# rearrange columns
+
+c0 <- grep("EnsID", colnames(dat))
+c1 <- grep("GeneName", colnames(dat))
+c2 <- grep("GeneType", colnames(dat))
+c3 <- c0 + 1
+c4 <- c1 - 1
+c5 <- c2 + 1
+dat <- dat[,c(c0,c1,c2,c3:c4,c5:ncol(dat))]
+colnames(dat)
+
+# remove samples based on metadata values
+
+keep <- !sub("_.*","",colnames(dat)) %in% patients.remove
+dat <- dat[,keep]
+
+# remove samples based on read counts <3m
+
+keep <- !sub("_.*","",colnames(dat)) %in% below30
+dat <- dat[,keep]
+
+# ensure P and R
+
+colnames(dat) <- sub("Primary","P",colnames(dat))
+colnames(dat) <- sub("Recurrent","R",colnames(dat))
+
+# check all samples occur in metadata
+
+table(sub("_.*","",colnames(dat[4:ncol(dat)])) %in% metadata$Patient.ID)
+
+# create DGEList
+
+y <- DGEList(counts=dat[,4:ncol(dat)], genes=dat[,1:3])
+
+# TMM normalisation
+
+y <- calcNormFactors(y)
+
+# covert to normalised counts
+
+ynorm <- cpm(y)
+rownames(ynorm) <- y$genes$EnsID
+```
+
+```{r dataframesdatatokeep}
+
+idx <- rownames(ynorm) %in% cpm.inc
+dat.cpm.inc <- ynorm[idx,]
+dat.cpm.inc <- as.vector(dat.cpm.inc, mode = "numeric")
+
+boxplot(dat.cpm.inc)
+
+
+```
+```{r test}
+
+
+idx <- rownames(ynorm) %in% fpkm.inc
+dat.fpkm.inc <- ynorm[idx,]
+dat.fpkm.inc <- as.vector(dat.fpkm.inc, mode = "numeric")
+
+boxplot(dat.fpkm.inc)
+
+```

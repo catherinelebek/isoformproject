@@ -70,8 +70,5 @@ keep <- !dat[,1] %in% lowexp
 dat <- dat[keep,] # this is the final set of data
 
 write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isolatedCounts_filtered.txt")
-getwd()
 
-test <- read.table("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isolatedCounts_filtered.txt", header = TRUE)
-head(test)
 
