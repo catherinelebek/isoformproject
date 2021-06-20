@@ -4,7 +4,7 @@ library(edgeR)
 
 # import count data
 
-dat <- read.table("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_filteredfpkm.txt", header = TRUE)
+dat <- read.table("/nobackup/bs20chlb/inputdata/nonstringent/PvR_isoformCounts_filtered.txt", header = TRUE)
 
 # create DGEList data class
 
@@ -72,7 +72,7 @@ lrt <- glmLRT(fit)
 # print results of top 10 most differentially expressed transcripts 
 
 res <- topTags(lrt, n = Inf)
-write.table(res, "/nobackup/bs20chlb/outputdata/stringent/edgeRresults.csv")
+write.table(res, "/nobackup/bs20chlb/outputdata/dea/nonstringent/edgeRresults.csv")
 
 # total number of differentially expression transcripts
 
