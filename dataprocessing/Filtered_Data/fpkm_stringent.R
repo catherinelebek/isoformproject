@@ -1,6 +1,6 @@
-# import count data
+# import fpkm data
 
-datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
+datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformfpkm_all.txt", header = TRUE)
 # datfull.fpkm <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformfpkm_all.txt", header = TRUE)
 
 dat <- datfull
@@ -62,13 +62,19 @@ lowexp <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/loc
 # lowexp <- read.csv("/nobackup/bs20chlb/inputdata/lowexpressionomit.csv", header = TRUE)
 
 # convert from data frame to vector
-lowexp <- as.vector(t(lowexp))
+lowexp <- as.vector(t(lowexp[,1]))
 
 # filter out the transcripts with low expression values
 
 keep <- !dat[,1] %in% lowexp
 dat <- dat[keep,] # this is the final set of data
 
-write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/stringent/PvR_isoformCounts_filtered.txt")
+# remove fpkm from column names
 
+colnames(dat) <- sub("_FPKM","",colnames(dat))
+head(dat)
+
+# write to file
+
+write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/stringent/PvR_isoformfpkm_filtered.txt")
 

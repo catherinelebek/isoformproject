@@ -1,4 +1,8 @@
-# import count data
+# The output of this file will be used as an input to edgeR and limmavoom
+
+# It will consist of raw (non-normalised) count data and filtered based on GTs script
+
+# import count data from the results folder
 
 datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
 # datfull.fpkm <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformfpkm_all.txt", header = TRUE)
@@ -58,17 +62,15 @@ colnames(dat) <- sub("Recurrent","R",colnames(dat))
 
 table(sub("_.*","",colnames(dat[4:ncol(dat)])) %in% metadata$Patient.ID)
 
-lowexp <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/stringentomit.csv", header = TRUE, sep = " ")
+lowexp <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/nonstringentinclude.txt", header = TRUE, sep = "\t")
 # lowexp <- read.csv("/nobackup/bs20chlb/inputdata/lowexpressionomit.csv", header = TRUE)
 
 # convert from data frame to vector
-lowexp <- as.vector(t(lowexp))
+lowexp <- as.vector(t(lowexp[,1]))
 
 # filter out the transcripts with low expression values
 
-keep <- !dat[,1] %in% lowexp
+keep <- dat[,1] %in% lowexp
 dat <- dat[keep,] # this is the final set of data
 
-write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/stringent/PvR_isoformCounts_filtered.txt")
-
-
+write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/nonstringent/PvR_isoformCounts_filtered.txt")

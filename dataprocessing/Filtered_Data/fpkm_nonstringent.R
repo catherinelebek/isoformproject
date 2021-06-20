@@ -1,22 +1,18 @@
-# import edgeR library
-
-library(edgeR)
-
 # import fpkm data
 
-datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
+datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformfpkm_all.txt", header = TRUE)
 # datfull.fpkm <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformfpkm_all.txt", header = TRUE)
 
 dat <- datfull
 
 # import metadata
 
-metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/Metadata.csv", header = TRUE)
+metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplefilters/Metadata.csv", header = TRUE)
 # metadata <- read.csv("/nobackup/bs20chlb/inputdata/Metadata.csv", header = TRUE)
 
 # import list of patients to remove based on metadata values
 
-patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/patients_remove.txt", header = FALSE)
+patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplefilters/patients_remove.txt", header = FALSE)
 # patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
 
 # convert to vector
@@ -25,7 +21,7 @@ patients.remove <- as.vector(t(patients.remove))
 
 # import list of patients to remove based on reads < 30m
 
-below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/below30.txt", header = FALSE)
+below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplefilters/below30.txt", header = FALSE)
 # below30 <- read.delim("/nobackup/bs20chlb/inputdata/below30.txt", header = FALSE)
 
 # covert datamframe to vector
@@ -62,7 +58,7 @@ colnames(dat) <- sub("Recurrent","R",colnames(dat))
 
 table(sub("_.*","",colnames(dat[4:ncol(dat)])) %in% metadata$Patient.ID)
 
-lowexp <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/test_primary_all.txt", header = TRUE, sep = "\t")
+lowexp <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/nonstringentinclude.txt", header = TRUE, sep = "\t")
 # lowexp <- read.csv("/nobackup/bs20chlb/inputdata/lowexpressionomit.csv", header = TRUE)
 
 # convert from data frame to vector
@@ -73,17 +69,12 @@ lowexp <- as.vector(t(lowexp[,1]))
 keep <- dat[,1] %in% lowexp
 dat <- dat[keep,] # this is the final set of data
 
-# create DGEList data class
+# remove fpkm from column names
 
-y <- DGEList(counts=dat[,4:ncol(dat)], genes=dat[,1:3])
-
-# TMM normalisation
-
-y <- calcNormFactors(y)
-
-y <- cbind(y$genes, y$counts)
+colnames(dat) <- sub("_FPKM","",colnames(dat))
+head(dat)
 
 # write to file
 
-write.table(y, "/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformnormCounts_filtered_nonstringent.txt")
+write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/nonstringent/PvR_isoformfpkm_filtered.txt")
 
