@@ -4,7 +4,7 @@ library(edgeR)
 
 # import count data
 
-dat <- read.table("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_filteredfpkm.txt", header = TRUE)
+dat <- read.table("/nobackup/bs20chlb/inputdata/nonstringent/PvR_isoformCounts_filtered.txt", header = TRUE)
 
 # create DGEList data class
 
@@ -56,7 +56,7 @@ restop <- topTable(fit, coef = "tumour.typeR", n = Inf)
 
 # write results to a file
 
-write.table(restop, "/nobackup/bs20chlb/outputdata/stringent/limmaresults.csv")
+write.table(restop, "/nobackup/bs20chlb/outputdata/dea/nonstringent/limmaresults.csv")
 
 plotMDS(y, labels = patient, col = as.numeric(tumour.type))
 
