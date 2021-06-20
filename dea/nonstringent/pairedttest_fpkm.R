@@ -1,6 +1,6 @@
 # import fpkm data so that it is normalised
 
-dat.allcol <- read.table("/nobackup/bs20chlb/inputdata/nonstringent/PvR_isoformfpkm_filtered.txt", header = TRUE)
+dat.allcol <- read.table("/nobackup/bs20chlb/inputdata/stringent/PvR_isoformfpkm_filtered.txt", header = TRUE)
 
 dat <- dat.allcol
 
@@ -107,4 +107,4 @@ ttest <- ttest[,c(10,11,1,9,2:8)]
 # reorder by increasing p-value
 
 ttest <- ttest[order(ttest$adj.pval),]
-write.table(ttest, "/nobackup/bs20chlb/outputdata/dea/nonstringent/pairedttestresults_fpkm.csv")
+write.table(ttest, "/nobackup/bs20chlb/outputdata/dea/stringent/pairedttestresults_fpkm.csv")
