@@ -1,6 +1,6 @@
-# import count data 
+# import fpkm data so that it is normalised
 
-dat.allcol <- read.table("/nobackup/bs20chlb/inputdata/PvR_isoformCounts_filtered.txt", header = TRUE)
+dat.allcol <- read.table("/nobackup/bs20chlb/inputdata/PvR_isoformfpkm_filtered_nonstringent.txt", header = TRUE)
 
 dat <- dat.allcol
 
@@ -12,7 +12,10 @@ dat <- dat[,c(-2,-3)]
 
 # set the rownames as the transcript names
 rownames(dat) <- dat[,1]
+
+# remove column 1
 dat <- dat[,c(-1)]
+
 head(dat)
 
 # split data into primary and recurrent
@@ -30,7 +33,7 @@ colnames(recurrent) <- sub("_.*","",colnames(recurrent))
 table(colnames(primary) == colnames(recurrent))
 
 # create a list with one item for every transcript
-# each transcript has a data frame of counts for each patient's primary and recurrent tumour
+# each transcript has a data frame of fpkm values for each patient's primary and recurrent tumour
 # expression delta calculated for each patient and transcript
 # this will enable me to run a paired t-test for each transcript
 
@@ -104,4 +107,4 @@ ttest <- ttest[,c(10,11,1,9,2:8)]
 # reorder by increasing p-value
 
 ttest <- ttest[order(ttest$adj.pval),]
-write.table(ttest, "/nobackup/bs20chlb/outputdata/pairedttestresults.csv")
+write.table(ttest, "/nobackup/bs20chlb/outputdata/pairedttestresults_fpkm.csv")
