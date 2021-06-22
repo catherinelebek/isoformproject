@@ -16,4 +16,4 @@
 
 # Now run the job
 module load R
-R CMD BATCH /nobackup/bs20chlb/scripts/isoformproject/dataprocessing/filtering_fpkm.R /nobackup/bs20chlb/outdir/dataprocessing/R-${JOB_ID}.Rout
+R CMD BATCH  /nobackup/bs20chlb/scripts/isoformproject/dataprocessing/Transcript_Filter_Logic/filtering_counts.R /nobackup/bs20chlb/outdir/dataprocessing/R-${JOB_ID}.Rout
