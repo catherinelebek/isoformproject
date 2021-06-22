@@ -16,5 +16,5 @@
 
 # Now run the job
 module load R
-R CMD BATCH /nobackup/bs20chlb/scripts/isoformproject/dea/stringent/pairedttest_countnorm.R /nobackup/bs20chlb/outdir/pairedttest/R-${JOB_ID}.Rout
+R CMD BATCH /nobackup/bs20chlb/scripts/isoformproject/dea/filter3/pairedttest_countnorm.R /nobackup/bs20chlb/outdir/pairedttest/R-${JOB_ID}.Rout
 
