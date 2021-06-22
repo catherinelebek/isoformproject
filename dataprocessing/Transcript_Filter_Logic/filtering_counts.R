@@ -90,7 +90,7 @@ ylist <- as.vector(ynorm, mode = "numeric")
 
 # remove normalised expression values of zero
 
-ylist <- ylist[ylist != 0]
+ylist <- ylist[ylist > 0.1]
 
 lowerq <- summary(ylist)[2]
 
