@@ -1,6 +1,6 @@
 # import normalised count data
 
-dat.allcol <- read.table("/nobackup/bs20chlb/inputdata/stringent/PvR_isoformnormCounts_filtered.txt", header = TRUE)
+dat.allcol <- read.table("/nobackup/bs20chlb/inputdata/filter3/PvR_isoformnormCounts_filtered.txt", header = TRUE)
 
 dat <- dat.allcol
 
@@ -71,7 +71,7 @@ for (i in 1:length(dat_list)){
   corr[i] <- cor(dat_list[[i]][,1],dat_list[[i]][,2])
 }
 
-write(corr, "/nobackup/bs20chlb/outputdata/correlations_per_patient.txt")
+write(corr, "/nobackup/bs20chlb/outputdata/dea/filter3/correlations_per_patient.txt")
 
 # do a paired t-test for each transcript
 # output values into dataframe
@@ -107,4 +107,4 @@ ttest <- ttest[,c(10,11,1,9,2:8)]
 # reorder by increasing p-value
 
 ttest <- ttest[order(ttest$adj.pval),]
-write.table(ttest, "/nobackup/bs20chlb/outputdata/dea/stringent/pairedttestresults_normcounts.csv")
+write.table(ttest, "/nobackup/bs20chlb/outputdata/dea/filter3/pairedttestresults_normcounts.csv")
