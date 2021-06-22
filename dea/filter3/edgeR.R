@@ -4,7 +4,7 @@ library(edgeR)
 
 # import count data
 
-dat <- read.table("/nobackup/bs20chlb/inputdata/stringent/PvR_isoformCounts_filtered.txt", header = TRUE)
+dat <- read.table("/nobackup/bs20chlb/inputdata/filter3/PvR_isoformCounts_filtered.txt", header = TRUE)
 
 # create DGEList data class
 
@@ -53,7 +53,7 @@ y <- estimateGLMTrendedDisp(y, design)
 
 y <- estimateGLMTagwiseDisp(y, design)
 
-save(y, file = "tagwisedisp.RData")
+save(y, file = "/nobackup/bs20chlb/outputdata/dea/filter3/tagwisedisp.RData")
 
 # plot dispersions
 
@@ -72,7 +72,7 @@ lrt <- glmLRT(fit)
 # print results of top 10 most differentially expressed transcripts 
 
 res <- topTags(lrt)
-write.table(res, "/nobackup/bs20chlb/outputdata/dea/stringent/edgeRresults.csv")
+write.table(res, "/nobackup/bs20chlb/outputdata/dea/filter3/edgeRresults.csv")
 
 # total number of differentially expression transcripts
 
