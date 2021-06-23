@@ -1,6 +1,6 @@
 library(DESeq2)
 
-fullcounts <- read.delim("~/Documents/Semester3/Project/Results/localresults/filter3/PvR_isoformCounts_filtered.txt",header = T, sep = " ")
+fullcounts <- read.delim("/nobackup/bs20chlb/inputdata/filter3/PvR_isoformCounts_filtered.txt",header = T, sep = " ")
 rownames(counts) <- counts[,1]
 counts <- counts[,c(-1,-2,-3)]
 
