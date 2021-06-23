@@ -23,7 +23,7 @@ dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = samples,
                               design = ~ patientid + tumourtype)
 
-featureData <- data.frame(gene = fullcounts[,2])
+featureData <- data.frame(gene = counts[,2])
 mcols(dds) <- DataFrame(mcols(dds), featureData)
 mcols(dds)
 
