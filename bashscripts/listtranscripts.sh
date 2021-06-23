@@ -16,4 +16,4 @@
 
 # Now run the job
 module load R
-R CMD BATCH  /nobackup/bs20chlb/scripts/isoformproject/resultsanalysis/listranscripts.R /nobackup/bs20chlb/outdir/resultsanalysis/R-${JOB_ID}.Rout
+R CMD BATCH  /nobackup/bs20chlb/scripts/isoformproject/resultsanalysis/listtranscripts.R /nobackup/bs20chlb/outdir/resultsanalysis/R-${JOB_ID}.Rout
