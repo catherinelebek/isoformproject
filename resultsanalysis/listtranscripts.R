@@ -1,4 +1,4 @@
-fullcounts <- read.delim("/nobackup/bs20chlb/inputdata/archive/PvR_isoformCounts_all.txt",header = T, sep = "\t")
+check <- read.delim("/nobackup/bs20chlb/inputdata/filter1/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
 
 transcripts <- vector(mode = "list", length = nrow(check))
 names(transcripts) <- check[,1]
