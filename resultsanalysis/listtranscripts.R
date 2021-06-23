@@ -1,4 +1,4 @@
-fullcounts <- read.delim("/nobackup/bs20chlb/inputdata/archive/PvR_isoformCounts_all.txt",header = T, sep = " \t")
+fullcounts <- read.delim("/nobackup/bs20chlb/inputdata/archive/PvR_isoformCounts_all.txt",header = T, sep = "\t")
 
 transcripts <- vector(mode = "list", length = nrow(fullcounts))
 
@@ -13,8 +13,10 @@ for (i in 1:length(transcripts)){
 
 
 for (i in 1:length(transcripts)){
-  for (j in 1:nrow(transcripts[[1]])){
+  for (j in 1:length(transcripts[[1]])){
   transcripts[[i]][j,1] <- fullcounts[fullcounts$EnsID == names(transcripts)[i], colnames(fullcounts) == paste(rownames(transcripts[[i]][j,]),"_P",sep="")]
   transcripts[[i]][j,2] <- fullcounts[fullcounts$EnsID == names(transcripts)[i], colnames(fullcounts) == paste(rownames(transcripts[[i]][j,]),"_R",sep="")]
   }
 }
+
+save(transcripts, "transcripts.RData")
