@@ -5,7 +5,7 @@
 #$ -l h_rt=12:00:00
 
 # Ask for some memory (by default, 1G, without a request)
-#$ -l h_vmem=8G
+#$ -l h_vmem=12G
 
 # Ask for output and error files to be sent to a specific folder
 #$ -o /nobackup/bs20chlb/outdir/deseq2/job-$JOB_ID.stdout
@@ -16,5 +16,5 @@
 
 # Now run the job
 module load R
-R CMD BATCH /nobackup/bs20chlb/scripts/isoformproject/dea/filter3/deseq2.R /nobackup/bs20chlb/outdir/deseq2/R-${JOB_ID}.Rout
+R CMD BATCH /nobackup/bs20chlb/scripts/isoformproject/dea/filter0/deseq2.R /nobackup/bs20chlb/outdir/deseq2/R-${JOB_ID}.Rout
 
