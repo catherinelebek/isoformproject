@@ -2,10 +2,10 @@
 #$ -cwd -V
 
 # Ask for some time (hh:mm:ss max of 48:00:00)
-#$ -l h_rt=06:00:00
+#$ -l h_rt=12:00:00
 
 # Ask for some memory (by default, 1G, without a request)
-#$ -l h_vmem=8G
+#$ -l h_vmem=12G
 
 # Ask for output and error files to be sent to a specific folder
 #$ -o /nobackup/bs20chlb/outdir/resultsanalysis/job-$JOB_ID.stdout
