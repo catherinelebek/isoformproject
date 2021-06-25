@@ -2,20 +2,17 @@
 
 library(edgeR)
 
-# datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
-datfull.counts <- read.delim("/nobackup/bs20chlb/inputdata/archive/PvR_isoformCounts_all.txt", header = TRUE)
+datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
 
 dat <- datfull.counts
 
 # import metadata
 
-# metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/Metadata.csv", header = TRUE)
-metadata <- read.csv("/nobackup/bs20chlb/inputdata/archive/Metadata.csv", header = TRUE)
+metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplefilters/Metadata.csv", header = TRUE)
 
 # import list of patients to remove based on metadata values
 
-# patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/patients_remove.txt", header = FALSE)
-patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/archive/patients_remove.txt", header = FALSE)
+patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplesfilters/patients_remove.txt", header = FALSE)
 
 # convert to vector
 
@@ -23,8 +20,7 @@ patients.remove <- as.vector(t(patients.remove))
 
 # import list of patients to remove based on reads < 30m
 
-# below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/below30.txt", header = FALSE)
-below30 <- read.delim("/nobackup/bs20chlb/inputdata/archive/below30.txt", header = FALSE)
+below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplefilters/below30.txt", header = FALSE)
 
 # covert datamframe to vector
 
@@ -120,32 +116,28 @@ dim(ynormrecurrent)
 
 # create new data frame to store % expression at least lower quartile for recurrent and primary tumours for each transcript
 
-exprres <- data.frame()
 
-for (i in 1:nrow(ynormprimary)){ # for every transcript
-  temp <- c()
-  for (j in 1:ncol(ynormprimary)){ # take every patient
-    temp[j] <- ynormprimary[i,j] >= lowerq # determine if the expression is higher or equal to the lower quartile
-  }
-  res <- sum(temp) / ncol(ynormprimary) # determine what % of all patients have expression higher than or equal to the lower quartile
-  exprres[i,1] <- ifelse(res >= 0.2, 1, 0) # determine is this % is great than or equal to 20%
+func_temp <- function(x){
+  x >= lowerq
 }
 
-
-for (i in 1:nrow(ynormrecurrent)){ # for every transcript
-  temp <- c()
-  for (j in 1:ncol(ynormrecurrent)){ # take every patient
-    temp[j] <- ynormrecurrent[i,j] >= lowerq # determine if the expression is higher or equal to the lower quartile
-  }
-  res <- sum(temp) / ncol(ynormrecurrent) # determine what % of all patiets have expression higher than or equal to the lower quartile
-  exprres[i,2] <- ifelse(res >= 0.2, 1, 0) # determine is this % is great than or equal to 20%
+func_temp2 <- function(x){
+  ifelse(sum(x)/43 >= 0.2, 1, 0)
 }
 
+primtemp <- apply(ynormprimary, 1:2, func_temp)
+primtemp2 <- apply(primtemp, 1, func_temp2)
+
+rectemp <- apply(ynormrecurrent, 1:2, func_temp)
+rectemp2 <- apply(rectemp, 1, func_temp2)
+
+table(names(primtemp2) == names(rectemp2))
+
+exprres <- cbind(primtemp2, rectemp2)
+
+exprres <- as.data.frame(exprres)
 colnames(exprres) <- c("Primary","Recurrent")
 exprres$Overall <- ifelse(exprres$Primary == 0 & exprres$Recurrent == 0, "Omit", "Include")
-
-table(exprres)
-
 
 # print list of transcripts to omit
 
@@ -155,7 +147,6 @@ length(omitidx) == nrow(y$genes)
 
 omit <- y$genes[omitidx,1]
 
-# write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/lowexpressionomit.csv")
+write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/filter3omit.csv")
 
-write.table(omit, "/nobackup/bs20chlb/outputdata/dataprocessing/lowexpressionomit.csv")
 
