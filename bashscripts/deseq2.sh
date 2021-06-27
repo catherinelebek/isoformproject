@@ -5,7 +5,7 @@
 #$ -l h_rt=12:00:00
 
 # Ask for some memory (by default, 1G, without a request)
-#$ -l h_vmem=12G
+#$ -l h_vmem=4G
 
 # Ask for a certain number of cores
 #$ -l np=6
