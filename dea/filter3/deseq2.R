@@ -1,7 +1,7 @@
 library(DESeq2)
 library(BiocParallel)
 
-counts <- read.delim("~/Documents/Semester3/Project/Results/localresults/filter3/PvR_isoformCounts_filtered.txt",header = T, sep = " ")
+counts <- read.delim("~/Documents/Semester3/Project/Results/localresults/filter3/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
 # counts <- read.delim("/nobackup/bs20chlb/inputdata/filter3/PvR_isoformCounts_filtered.txt",header = T, sep = " ")
 rownames(counts) <- counts[,1]
 counts <- counts[,c(-1,-2,-3)]
@@ -12,8 +12,8 @@ colnames(samples) <- c("patientid","tumourtype")
 rownames(samples) <- colnames(counts)
 
 for (i in 1:nrow(samples)){
-  samples[i,1] <- sub("_.*","",colnames(counts)[i])
-  samples[i,2] <- sub(".*_","",colnames(counts)[i])
+  samples[i,1] <- gsub(".{2}$","",colnames(counts)[i])
+  samples[i,2] <- substr(colnames(counts)[i], nchar(colnames(counts)[i]), nchar(colnames(counts)[i]))
 }
 
 samples$patientid <- as.factor(samples$patientid)

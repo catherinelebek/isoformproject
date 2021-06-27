@@ -1,30 +1,26 @@
+# this script gives a list of transcripts we want to keep based on count data from patients we want to include
+
 # import libraries
 
 library(edgeR)
 
-datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
+datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/PvR_isoformCounts_all_LS_23062021.txt.txt", 
+                             header = TRUE, sep = "\t")
 
 dat <- datfull.counts
 
 # import metadata
 
-metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplefilters/Metadata.csv", header = TRUE)
+metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/samplefilters/Metadata_LS_230621.txt", 
+                     header = TRUE, sep = "\t")
 
 # import list of patients to remove based on metadata values
 
-patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplesfilters/patients_remove.txt", header = FALSE)
+patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/samplefilters/patientskeep.txt", header = FALSE)
 
 # convert to vector
 
-patients.remove <- as.vector(t(patients.remove))
-
-# import list of patients to remove based on reads < 30m
-
-below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplefilters/below30.txt", header = FALSE)
-
-# covert datamframe to vector
-
-below30 <- as.vector(t(below30))
+patientskeep <- as.vector(t(patientskeep))
 
 # rearrange columns
 
@@ -46,29 +42,30 @@ y <- DGEList(counts=dat[,4:ncol(dat)], genes=dat[,1:3])
 
 # update the samples table to have patientid and tumourtype columns
 
-y$samples$patientid <- sub("_.*","",rownames(y$samples))
-y$samples$tumourtype <- sub(".*_","",rownames(y$samples))
-y$samples$tumourtype <- ifelse(y$samples$tumourtype == "Primary","P",ifelse(y$samples$tumourtype == "Recurrent","R",y$samples$tumourtype))
+y$samples$Patient.ID <- sub("rimary","",rownames(y$samples))
+y$samples$Patient.ID <- sub("ecurrent","",y$samples$Patient.ID)
+y$samples$Patient.ID <- gsub(".{2}$","",y$samples$Patient.ID)
+
+y$samples$tumour.type <- sub("rimary","",rownames(y$samples))
+y$samples$tumour.type <- sub("ecurrent","",y$samples$tumour.type)
+y$samples$tumour.type <- gsub(".*_","",y$samples$tumour.type)
+
+# Are all the patients in the raw count file also in the metadata?
+
+table(y$samples$Patient.ID %in% metadata$Patient.ID)
+
+# Are all the patients in the metadata also in the raw count file?
+
+table(metadata$Patient.ID %in% y$samples$Patient.ID)
 
 # remove columns corresponding to samples that should be excluded from the analyses
 
-# check all samples occur in metadata
-
-table(y$samples$patientid %in% metadata$Patient.ID)
-
-
 # filter DGEList using the samples object
-# expect to go from 176 samples to 120 samples
 
-keep <- !y$sample$patientid %in% patients.remove # indexes for patient samples not in the patient remove file
+# expect to go from 240 samples to 66x2 (132) samples
+
+keep <- y$samples$Patient.ID %in% patientskeep # indexes for patient samples in the patientkeep file
 y <- y[,keep] # subsetting y
-
-
-# filter DGEList using the samples object
-# expecting to go from 120 samples to 86 samples
-
-keep <- !y$samples$patientid %in% below30
-y <- y[,keep]
 
 # TMM normalisation
 
@@ -99,8 +96,8 @@ lowerq
 
 table(colnames(ynorm) == rownames(y$samples))
 
-idx.primary <- y$samples$tumourtype == "P"
-idx.recurrent <- y$samples$tumourtype == "R"
+idx.primary <- y$samples$tumour.type == "P"
+idx.recurrent <- y$samples$tumour.type == "R"
 
 # pull out ynorm columns corresponding to primary tumours
 
