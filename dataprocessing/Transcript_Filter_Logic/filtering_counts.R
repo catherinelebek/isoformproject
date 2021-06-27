@@ -1,34 +1,26 @@
+# this script gives a list of transcripts we want to keep based on count data from patients we want to include
+
 # import libraries
 
 library(edgeR)
 
-# datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
-datfull.counts <- read.delim("/nobackup/bs20chlb/inputdata/archive/PvR_isoformCounts_all.txt", header = TRUE)
+datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/PvR_isoformCounts_all_LS_23062021.txt.txt", 
+                             header = TRUE, sep = "\t")
 
 dat <- datfull.counts
 
 # import metadata
 
-# metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/Metadata.csv", header = TRUE)
-metadata <- read.csv("/nobackup/bs20chlb/inputdata/archive/Metadata.csv", header = TRUE)
+metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/samplefilters/Metadata_LS_230621.txt", 
+                     header = TRUE, sep = "\t")
 
 # import list of patients to remove based on metadata values
 
-# patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/patients_remove.txt", header = FALSE)
-patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/archive/patients_remove.txt", header = FALSE)
+patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/samplefilters/patientskeep.txt", header = FALSE)
 
 # convert to vector
 
-patients.remove <- as.vector(t(patients.remove))
-
-# import list of patients to remove based on reads < 30m
-
-# below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/below30.txt", header = FALSE)
-below30 <- read.delim("/nobackup/bs20chlb/inputdata/archive/below30.txt", header = FALSE)
-
-# covert datamframe to vector
-
-below30 <- as.vector(t(below30))
+patientskeep <- as.vector(t(patientskeep))
 
 # rearrange columns
 
@@ -50,29 +42,30 @@ y <- DGEList(counts=dat[,4:ncol(dat)], genes=dat[,1:3])
 
 # update the samples table to have patientid and tumourtype columns
 
-y$samples$patientid <- sub("_.*","",rownames(y$samples))
-y$samples$tumourtype <- sub(".*_","",rownames(y$samples))
-y$samples$tumourtype <- ifelse(y$samples$tumourtype == "Primary","P",ifelse(y$samples$tumourtype == "Recurrent","R",y$samples$tumourtype))
+y$samples$Patient.ID <- sub("rimary","",rownames(y$samples))
+y$samples$Patient.ID <- sub("ecurrent","",y$samples$Patient.ID)
+y$samples$Patient.ID <- gsub(".{2}$","",y$samples$Patient.ID)
+
+y$samples$tumour.type <- sub("rimary","",rownames(y$samples))
+y$samples$tumour.type <- sub("ecurrent","",y$samples$tumour.type)
+y$samples$tumour.type <- gsub(".*_","",y$samples$tumour.type)
+
+# Are all the patients in the raw count file also in the metadata?
+
+table(y$samples$Patient.ID %in% metadata$Patient.ID)
+
+# Are all the patients in the metadata also in the raw count file?
+
+table(metadata$Patient.ID %in% y$samples$Patient.ID)
 
 # remove columns corresponding to samples that should be excluded from the analyses
 
-# check all samples occur in metadata
-
-table(y$samples$patientid %in% metadata$Patient.ID)
-
-
 # filter DGEList using the samples object
-# expect to go from 176 samples to 120 samples
 
-keep <- !y$sample$patientid %in% patients.remove # indexes for patient samples not in the patient remove file
+# expect to go from 240 samples to 66x2 (132) samples
+
+keep <- y$samples$Patient.ID %in% patientskeep # indexes for patient samples in the patientkeep file
 y <- y[,keep] # subsetting y
-
-
-# filter DGEList using the samples object
-# expecting to go from 120 samples to 86 samples
-
-keep <- !y$samples$patientid %in% below30
-y <- y[,keep]
 
 # TMM normalisation
 
@@ -103,8 +96,8 @@ lowerq
 
 table(colnames(ynorm) == rownames(y$samples))
 
-idx.primary <- y$samples$tumourtype == "P"
-idx.recurrent <- y$samples$tumourtype == "R"
+idx.primary <- y$samples$tumour.type == "P"
+idx.recurrent <- y$samples$tumour.type == "R"
 
 # pull out ynorm columns corresponding to primary tumours
 
@@ -120,32 +113,28 @@ dim(ynormrecurrent)
 
 # create new data frame to store % expression at least lower quartile for recurrent and primary tumours for each transcript
 
-exprres <- data.frame()
 
-for (i in 1:nrow(ynormprimary)){ # for every transcript
-  temp <- c()
-  for (j in 1:ncol(ynormprimary)){ # take every patient
-    temp[j] <- ynormprimary[i,j] >= lowerq # determine if the expression is higher or equal to the lower quartile
-  }
-  res <- sum(temp) / ncol(ynormprimary) # determine what % of all patients have expression higher than or equal to the lower quartile
-  exprres[i,1] <- ifelse(res >= 0.2, 1, 0) # determine is this % is great than or equal to 20%
+func_temp <- function(x){
+  x >= lowerq
 }
 
-
-for (i in 1:nrow(ynormrecurrent)){ # for every transcript
-  temp <- c()
-  for (j in 1:ncol(ynormrecurrent)){ # take every patient
-    temp[j] <- ynormrecurrent[i,j] >= lowerq # determine if the expression is higher or equal to the lower quartile
-  }
-  res <- sum(temp) / ncol(ynormrecurrent) # determine what % of all patiets have expression higher than or equal to the lower quartile
-  exprres[i,2] <- ifelse(res >= 0.2, 1, 0) # determine is this % is great than or equal to 20%
+func_temp2 <- function(x){
+  ifelse(sum(x)/43 >= 0.2, 1, 0)
 }
 
+primtemp <- apply(ynormprimary, 1:2, func_temp)
+primtemp2 <- apply(primtemp, 1, func_temp2)
+
+rectemp <- apply(ynormrecurrent, 1:2, func_temp)
+rectemp2 <- apply(rectemp, 1, func_temp2)
+
+table(names(primtemp2) == names(rectemp2))
+
+exprres <- cbind(primtemp2, rectemp2)
+
+exprres <- as.data.frame(exprres)
 colnames(exprres) <- c("Primary","Recurrent")
 exprres$Overall <- ifelse(exprres$Primary == 0 & exprres$Recurrent == 0, "Omit", "Include")
-
-table(exprres)
-
 
 # print list of transcripts to omit
 
@@ -155,7 +144,6 @@ length(omitidx) == nrow(y$genes)
 
 omit <- y$genes[omitidx,1]
 
-# write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/lowexpressionomit.csv")
+write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/filter3omit.csv")
 
-write.table(omit, "/nobackup/bs20chlb/outputdata/dataprocessing/lowexpressionomit.csv")
 
