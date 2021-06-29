@@ -1,32 +1,23 @@
+library(stringr)
+
 # import count data
 
-datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt", header = TRUE)
+datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/isoforms/firstdata/PvR_isoformCounts_all.txt",
+                      header = TRUE, sep = "\t")
 # datfull.fpkm <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformfpkm_all.txt", header = TRUE)
 
 dat <- datfull
 
-# import metadata
 
-metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplefilters/Metadata.csv", header = TRUE)
-# metadata <- read.csv("/nobackup/bs20chlb/inputdata/Metadata.csv", header = TRUE)
+# import list of patients to keep based on metadata values
 
-# import list of patients to remove based on metadata values
-
-patients.remove <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplefilters/patients_remove.txt", header = FALSE)
+patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/firstdata/patientskeep.txt", header = FALSE)
 # patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
 
 # convert to vector
 
-patients.remove <- as.vector(t(patients.remove))
+patientskeep <- as.vector(t(patientskeep))
 
-# import list of patients to remove based on reads < 30m
-
-below30 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/samplefilters/below30.txt", header = FALSE)
-# below30 <- read.delim("/nobackup/bs20chlb/inputdata/below30.txt", header = FALSE)
-
-# covert datamframe to vector
-
-below30 <- as.vector(t(below30))
 
 # rearrange columns
 
@@ -39,26 +30,29 @@ c5 <- c2 + 1
 dat <- dat[,c(c0,c1,c2,c3:c4,c5:ncol(dat))]
 colnames(dat)
 
-# remove samples based on metadata values
-
-keep <- !sub("_.*","",colnames(dat)) %in% patients.remove
-dat <- dat[,keep]
-
-# remove samples based on read counts <3m
-
-keep <- !sub("_.*","",colnames(dat)) %in% below30
-dat <- dat[,keep]
-
 # ensure P and R
 
 colnames(dat) <- sub("Primary","P",colnames(dat))
 colnames(dat) <- sub("Recurrent","R",colnames(dat))
 
-# check all samples occur in metadata
+# remove samples based on metadata values
+# do this by creating a vector of column names in the same order as in dat
 
-table(sub("_.*","",colnames(dat[4:ncol(dat)])) %in% metadata$Patient.ID)
+cols <- colnames(dat[,4:ncol(dat)])
+cols <- str_sub(cols, start = 1, end = -3)
+cols 
 
-lowexp <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/filter3omit.csv", header = TRUE, sep = " ")
+keep <- cols %in% patientskeep
+add <- c(TRUE,TRUE,TRUE)
+keep <- c(add,keep)
+
+dat <- dat[,keep]
+
+head(dat)
+
+# remove transcripts with low read counts
+
+lowexp <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/firstdata/transcriptsomit.csv", header = TRUE, sep = ",")
 # lowexp <- read.csv("/nobackup/bs20chlb/inputdata/lowexpressionomit.csv", header = TRUE)
 
 # convert from data frame to vector
@@ -69,6 +63,7 @@ lowexp <- as.vector(t(lowexp))
 keep <- !dat[,1] %in% lowexp
 dat <- dat[keep,] # this is the final set of data
 
-write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/filter3/PvR_isoformCounts_filtered.txt")
+write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/firstdata/PvR_isoformCounts_filtered.txt",
+            sep = "\t")
 
 
