@@ -4,19 +4,14 @@
 
 library(edgeR)
 
-datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/PvR_isoformCounts_all_LS_23062021.txt.txt", 
+datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/isoforms/seconddata/PvR_isoformCounts_all_LS_23062021.txt.txt", 
                              header = TRUE, sep = "\t")
 
 dat <- datfull.counts
 
-# import metadata
-
-metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/samplefilters/Metadata_LS_230621.txt", 
-                     header = TRUE, sep = "\t")
-
 # import list of patients to remove based on metadata values
 
-patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/samplefilters/patientskeep.txt", header = FALSE)
+patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/patientskeep.txt", header = FALSE)
 
 # convert to vector
 
@@ -50,13 +45,7 @@ y$samples$tumour.type <- sub("rimary","",rownames(y$samples))
 y$samples$tumour.type <- sub("ecurrent","",y$samples$tumour.type)
 y$samples$tumour.type <- gsub(".*_","",y$samples$tumour.type)
 
-# Are all the patients in the raw count file also in the metadata?
 
-table(y$samples$Patient.ID %in% metadata$Patient.ID)
-
-# Are all the patients in the metadata also in the raw count file?
-
-table(metadata$Patient.ID %in% y$samples$Patient.ID)
 
 # remove columns corresponding to samples that should be excluded from the analyses
 
@@ -144,6 +133,6 @@ length(omitidx) == nrow(y$genes)
 
 omit <- y$genes[omitidx,1]
 
-write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/filter3omit.csv")
+write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/transcriptsomit.csv", row.names = F)
 
 

@@ -1,11 +1,11 @@
 # import metadata
 
-metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/samplefilters/MetaData_LS_230621.txt",
+metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/InputData/isoforms/seconddata/MetaData_LS_230621.txt",
                      header = TRUE, "\t")
 
 # import sequencing data
 
-sequencing <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/samplefilters/SequencingMetrics_LS_230621.txt",
+sequencing <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/InputData/isoforms/seconddata/SequencingMetrics_LS_230621.txt",
                      header = TRUE, "\t")
 
 # add patient column to sequencing data
@@ -57,5 +57,5 @@ table(temp)
 # write list of patients to keep to file
 
 write.table(patientskeep, 
-            "/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/samplefilters/patientskeep.txt",
+            "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/patientskeep.txt",
             col.names = F, row.names = F)

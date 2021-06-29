@@ -2,21 +2,15 @@ library(stringr)
 
 # import count data
 
-datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/PvR_isoformCounts_all_LS_23062021.txt.txt",
+datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/isoforms/seconddata/PvR_isoformCounts_all_LS_23062021.txt.txt",
                       header = TRUE, sep = "\t")
 # datfull.fpkm <- read.delim("/nobackup/bs20chlb/inputdata/PvR_isoformfpkm_all.txt", header = TRUE)
 
 dat <- datfull
 
-# import metadata
-
-metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/samplefilters/MetaData_LS_230621.txt",
-                     header = TRUE, "\t")
-# metadata <- read.csv("/nobackup/bs20chlb/inputdata/Metadata.csv", header = TRUE)
-
 # import list of patients to remove based on metadata values
 
-patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/seconddata/samplefilters/patientskeep.txt", header = FALSE)
+patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/patientskeep.txt", header = FALSE)
 # patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
 
 # convert to vector
@@ -57,7 +51,7 @@ head(dat)
 
 # remove transcripts with low read counts
 
-lowexp <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/filter3omit.csv", header = TRUE, sep = " ")
+lowexp <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/transcriptsomit.csv", header = TRUE, sep = ",")
 # lowexp <- read.csv("/nobackup/bs20chlb/inputdata/lowexpressionomit.csv", header = TRUE)
 
 # convert from data frame to vector
@@ -68,7 +62,7 @@ lowexp <- as.vector(t(lowexp))
 keep <- !dat[,1] %in% lowexp
 dat <- dat[keep,] # this is the final set of data
 
-write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/filter3/PvR_isoformCounts_filtered.txt",
+write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/PvR_isoformCounts_filtered.txt",
             sep = "\t")
 
 
