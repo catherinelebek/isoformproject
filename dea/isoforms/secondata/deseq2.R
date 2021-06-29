@@ -1,8 +1,9 @@
 library(DESeq2)
 library(BiocParallel)
 
-# counts <- read.delim("~/Documents/Semester3/Project/Results/localresults/filter3/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
-counts <- read.delim("/nobackup/bs20chlb/inputdata/filter3/PvR_isoformCounts_filtered.txt",header = T, sep = " ")
+# counts <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
+counts <- read.delim("/nobackup/bs20chlb/inputdata/seconddata/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
+
 rownames(counts) <- counts[,1]
 counts <- counts[,c(-1,-2,-3)]
 
@@ -28,10 +29,4 @@ dds$tumourtype <- relevel(dds$tumourtype, ref = "P")
 
 dds <- DESeq(dds, parallel = TRUE, BPPARAM = MulticoreParam(4))
 
-save(dds, file = "deseq.RData")
-
-res <- results(dds, alpha = 0.05)
-
-resOrdered <- res[order(res$pvalue),]
-
-summary(res)
+save(dds, file = "/nobackup/bs20chlb/outputdata/dea/seconddata/deseq2.RData")
