@@ -2,11 +2,11 @@ library(DESeq2)
 
 # load DESeq2 object as dds
 
-load("~/Documents/Semester3/Project/Results/dea/genes/deseq.RData")
+load("~/Documents/Semester3/Project/Results/dea/genes/deseq2.RData")
 
 # load full list of transcripts in order to pull through gene names
 
-genelist <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/genes/PvR_geneCounts_all_LS_23062021.txt.txt",
+genelist <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/genes/PvR_geneCounts_all_LS_23062021.txt.txt",
                        header = T, sep = "\t")
 
 head(genelist)

@@ -2,11 +2,11 @@ library(DESeq2)
 
 # load DESeq2 object as dds
 
-load("~/Documents/Semester3/Project/Results/dea/filter3/deseq.RData")
+load("~/Documents/Semester3/Project/Results/dea/isoforms/filter3/seconddata/deseq2.RData")
 
 # load full list of transcripts in order to pull through gene names
 
-genelist <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/PvR_isoformCounts_all.txt",
+genelist <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/isoforms/seconddata/PvR_isoformCounts_all_LS_23062021.txt.txt",
                        header = T, sep = "\t")
 
 # extract just transcripts and gene names
@@ -43,4 +43,15 @@ summary(res)
 
 # save results to csv
 
-write.csv(merge, "/Users/catherinehogg/Documents/Semester3/Project/Results/dea/filter3/deseq2results.csv")
+write.csv(merge, "/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/filter3/seconddata/deseq2results.csv")
+
+merge_second <- merge
+merge_first <- merge
+
+head(merge_first,100)
+head(merge_second,100)
+
+write.csv(merge_first,"/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/filter3/seconddata/merge_first.csv")
+write.csv(merge_second,"/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/filter3/seconddata/merge_second.csv")
+
+
