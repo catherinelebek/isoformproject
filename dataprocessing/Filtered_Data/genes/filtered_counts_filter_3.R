@@ -2,21 +2,16 @@ library(stringr)
 
 # import count data
 
-datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/genes/PvR_geneCounts_all_LS_23062021.txt.txt",
+datfull <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/genes/PvR_geneCounts_all_LS_23062021.txt.txt",
                       header = TRUE, sep = "\t")
 
 
 dat <- datfull
 
-# import metadata
-
-metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/isoforms/seconddata/samplefilters/MetaData_LS_230621.txt",
-                     header = TRUE, "\t")
-# metadata <- read.csv("/nobackup/bs20chlb/inputdata/Metadata.csv", header = TRUE)
 
 # import list of patients to remove based on metadata values
 
-patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Scripts/isoformproject/local/localdata/isoforms/seconddata/samplefilters/patientskeep.txt", header = FALSE)
+patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/patientskeep.txt", header = FALSE)
 # patients.remove <- read.delim("/nobackup/bs20chlb/inputdata/patients_remove.txt", header = FALSE)
 
 # convert to vector
@@ -55,7 +50,7 @@ dat <- dat[,keep]
 
 head(dat)
 
-write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/localresults/genes/PvR_geneCounts_filtered.txt",
+write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/genes/PvR_geneCounts_filtered.txt",
             sep = "\t")
 
 
