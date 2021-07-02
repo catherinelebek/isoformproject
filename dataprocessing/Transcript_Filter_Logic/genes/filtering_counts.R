@@ -1,17 +1,17 @@
-# this script gives a list of transcripts we want to keep based on count data from patients we want to include
+# this script gives a list of genes we want to keep based on count data from patients we want to include
 
 # import libraries
 
 library(edgeR)
 
-datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/isoforms/seconddata/PvR_isoformCounts_all_LS_23062021.txt.txt", 
+datfull.counts <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/genes/PvR_geneCounts_all_LS_23062021.txt.txt", 
                              header = TRUE, sep = "\t")
 
 dat <- datfull.counts
 
 # import list of patients to remove based on metadata values
 
-patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/up-responders/patientskeep.txt", header = FALSE)
+patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/patientskeep.txt", header = FALSE)
 
 # convert to vector
 
@@ -102,7 +102,7 @@ dim(ynormrecurrent)
 
 # create new data frame to store % expression at least lower quartile for recurrent and primary tumours for each transcript
 
-n <- ncol(ynormprimary)
+n <- 66
 
 func_temp <- function(x){
   x >= lowerq
@@ -134,6 +134,6 @@ length(omitidx) == nrow(y$genes)
 
 omit <- y$genes[omitidx,1]
 
-write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/up-responders/transcriptsomit.csv", row.names = F)
+write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/genes/transcriptsomit.csv", row.names = F)
 
 

@@ -102,13 +102,14 @@ dim(ynormrecurrent)
 
 # create new data frame to store % expression at least lower quartile for recurrent and primary tumours for each transcript
 
+n <- ncol(ynormprimary)
 
 func_temp <- function(x){
   x >= lowerq
 }
 
 func_temp2 <- function(x){
-  ifelse(sum(x)/43 >= 0.2, 1, 0)
+  ifelse(sum(x)/n >= 0.2, 1, 0)
 }
 
 primtemp <- apply(ynormprimary, 1:2, func_temp)

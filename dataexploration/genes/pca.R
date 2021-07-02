@@ -1,16 +1,26 @@
 library(stringr)
 
 counts.full <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/genes/PvR_geneCounts_filtered.txt",header = T, sep = "\t")
-head(counts)
 
 counts <- counts.full
 
 rownames(counts) <- counts[,1]
 counts <- counts[,c(-1,-2,-3)]
-
-idx_primary <- colnames(counts)
-
 colnames(counts)
+
+
+jarid2 <- read.delim("~/Documents/Semester3/Project/InputData/genes/jarid2.csv",header = F, sep = ",")
+jarid2 <- c(t(jarid2))
+
+counts <- counts[sub("\\..*","",rownames(counts)) %in% jarid2,]
+
+
+
+func <- function(x){x + 0.01}
+
+counts <- apply(counts, 1:2, func)
+
+head(counts)
 
 cols <- gsub(".{2}$","",colnames(counts))
 cols <- unique(cols)
@@ -61,6 +71,6 @@ pca.res.rot <- merge(pca.res.rot, metadata[,c("Patient.ID","NES")], by.x = "row.
 pca.res.rot$type <- ifelse(pca.res.rot$NES > 0, "Up", "Down")
 pca.res.rot$type <- as.factor(pca.res.rot$type)
 
-plot(pca.res$rotation[,1],pca.res$rotation[,2],xlab="loading 1",ylab="loading 2", 
+plot(pca.res.rot$PC1,pca.res.rot$PC2,xlab="loading 1",ylab="loading 2", 
      main="Loadings", col = pca.res.rot$type, pch = 16)
 
