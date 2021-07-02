@@ -16,6 +16,4 @@
 
 # Now run the job
 module load R
-R CMD BATCH /nobackup/bs20chlb/scripts/dea/isoforms/seconddata/deseq2.R /nobackup/bs20chlb/outdir/deseq2/R-${JOB_ID}.Rout
-
-
+R CMD BATCH /nobackup/bs20chlb/scripts/dea/isoforms/seconddata/down-responders/deseq2.R /nobackup/bs20chlb/outdir/deseq2/R-${JOB_ID}.Rout
