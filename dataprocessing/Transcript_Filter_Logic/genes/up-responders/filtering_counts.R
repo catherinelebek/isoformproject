@@ -11,7 +11,7 @@ dat <- datfull.counts
 
 # import list of patients to remove based on metadata values
 
-patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/patientskeep.txt", header = FALSE)
+patientskeep <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/up-responders/patientskeep.txt", header = FALSE)
 
 # convert to vector
 
@@ -134,6 +134,6 @@ length(omitidx) == nrow(y$genes)
 
 omit <- y$genes[omitidx,1]
 
-write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/genes/transcriptsomit.csv", row.names = F)
+write.table(omit, "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/genes/up-responders/transcriptsomit.csv", row.names = F)
 
 

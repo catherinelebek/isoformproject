@@ -50,6 +50,19 @@ dat <- dat[,keep]
 
 head(dat)
 
+# remove transcripts with low read counts
+
+lowexp <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/genes/up-responders/transcriptsomit.csv", header = TRUE, sep = ",")
+# lowexp <- read.csv("/nobackup/bs20chlb/inputdata/lowexpressionomit.csv", header = TRUE)
+
+# convert from data frame to vector
+lowexp <- as.vector(t(lowexp))
+
+# filter out the transcripts with low expression values
+
+keep <- !dat[,1] %in% lowexp
+dat <- dat[keep,] # this is the final set of data
+
 write.table(dat, "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/genes/up-responders/PvR_geneCounts_filtered.txt",
             sep = "\t")
 
