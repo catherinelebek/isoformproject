@@ -1,5 +1,5 @@
 library(DESeq2)
-library(BiocParallel)
+# library(BiocParallel)
 
 # counts <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
 counts <- read.delim("/nobackup/bs20chlb/inputdata/seconddata/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
@@ -27,6 +27,9 @@ dds <- DESeqDataSetFromMatrix(countData = counts,
 
 dds$tumourtype <- relevel(dds$tumourtype, ref = "P")
 
-dds <- DESeq(dds, parallel = TRUE, BPPARAM = MulticoreParam(4))
+# dds <- DESeq(dds, parallel = TRUE, BPPARAM = MulticoreParam(4))
+
+dds <- DESeq(dds)
+
 
 save(dds, file = "/nobackup/bs20chlb/outputdata/dea/seconddata/deseq2.RData")
