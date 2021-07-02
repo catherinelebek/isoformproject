@@ -45,3 +45,23 @@ summary(res)
 
 write.csv(merge, "~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/down-responders/deseq2results.csv")
 
+
+# ggplot
+
+merge$threshold <- merge$padj < 0.05 & abs(merge$log2FoldChange) > 1
+merge$top20 <- ""
+merge$top20[1:10] <- 1
+
+ggplot(merge) +
+  geom_point(aes(x = log2FoldChange, y=-log10(padj), colour = threshold)) +
+  geom_text(aes(x = log2FoldChange, y=-log10(padj),
+                      label = ifelse(top20 == 1, GeneName, ""))) +
+  ggtitle("Differential Isoform Expression - Down-Responders") +
+  xlab("log2 fold change") +
+  ylab("-log10 adjusted p-value") +
+  geom_vline(xintercept = 1, linetype = 2) +
+  geom_vline(xintercept = -1, linetype = 2) +
+  geom_hline(yintercept = -log10(0.05), linetype = 2) +
+  scale_colour_manual(values=c("black","red")) +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
+  theme_bw()

@@ -1,8 +1,10 @@
 library(DESeq2)
+library(ggplot2)
+library(ggrepel)
 
 # load DESeq2 object as dds
 
-load("~/Documents/Semester3/Project/Results/dea/isoforms/filter3/seconddata/deseq2.RData")
+load("~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/deseq2.RData")
 
 # load full list of transcripts in order to pull through gene names
 
@@ -45,13 +47,32 @@ summary(res)
 
 write.csv(merge, "/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/filter3/seconddata/deseq2results.csv")
 
-merge_second <- merge
-merge_first <- merge
+# MA-plot
 
-head(merge_first,100)
-head(merge_second,100)
+DESeq2::plotMA(res)
 
-write.csv(merge_first,"/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/filter3/seconddata/merge_first.csv")
-write.csv(merge_second,"/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/filter3/seconddata/merge_second.csv")
+# shrunken LFC
 
+reslfc <- lfcShrink(dds, "tumourtype_R_vs_P", type = "apeglm")
+DESeq2::plotMA(resLFC)
+
+# ggplot
+
+merge$threshold <- merge$padj < 0.05 & abs(merge$log2FoldChange) > 1
+merge$top20 <- ""
+merge$top20[1:10] <- 1
+
+ggplot(merge) +
+  geom_point(aes(x = log2FoldChange, y=-log10(padj), colour = threshold)) +
+  geom_text_repel(aes(x = log2FoldChange, y=-log10(padj),
+                label = ifelse(top20 == 1, GeneName, ""))) +
+  ggtitle("Differential Isoform Expression - Second Data") +
+  xlab("log2 fold change") +
+  ylab("-log10 adjusted p-value") +
+  geom_vline(xintercept = 1, linetype = 2) +
+  geom_vline(xintercept = -1, linetype = 2) +
+  geom_hline(yintercept = -log10(0.05), linetype = 2) +
+  scale_colour_manual(values=c("black","red")) +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
 
