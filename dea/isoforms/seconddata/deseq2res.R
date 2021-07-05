@@ -45,7 +45,7 @@ summary(res)
 
 # save results to csv
 
-write.csv(merge, "/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/filter3/seconddata/deseq2results.csv")
+write.csv(merge, "/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/seconddata/deseq2results.csv")
 
 # MA-plot
 
