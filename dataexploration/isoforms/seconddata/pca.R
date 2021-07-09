@@ -1,6 +1,7 @@
 library(stringr)
 
-counts.full <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
+counts.full <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/PvR_isoformCounts_filtered.txt",
+                          header = T, sep = "\t")
 head(counts.full)
 
 counts <- counts.full
@@ -64,6 +65,6 @@ pca.res.rot$type <- as.factor(pca.res.rot$type)
 
 plot(pca.res.rot$PC1,pca.res.rot$PC2,xlab="loading 1",ylab="loading 2", 
      main="Loadings - LFC isoform expression", col = pca.res.rot$type, pch = 16)
-legend(0.1,0.3,c("Down","Up"), col = c(1,2), pch = 16)
+legend(0.15,0.3,c("Down","Up"), col = c(1,2), pch = 16)
 
 pca.res.rot[order(pca.res.rot$PC2),]
