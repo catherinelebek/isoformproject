@@ -1,8 +1,8 @@
 library(DESeq2)
-library(BiocParallel)
+# library(BiocParallel)
 
-counts.full <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/up-responders/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
-# counts <- read.delim("/nobackup/bs20chlb/inputdata/seconddata/up-responders/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
+# counts.full <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/seconddata/up-responders/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
+counts.full <- read.delim("/nobackup/bs20chlb/inputdata/seconddata/up-responders/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
 
 counts <- counts.full
 
@@ -53,7 +53,7 @@ for (i in 1:n){
 
   dds$tumourtype <- relevel(dds$tumourtype, ref = "P")
 
-  # dds <- DESeq(dds, parallel = TRUE, BPPARAM = MulticoreParam(4))
+ # dds <- DESeq(dds, parallel = TRUE, BPPARAM = MulticoreParam(4))
 
   dds <- DESeq(dds)
   
@@ -71,7 +71,7 @@ for (i in 1:n){
   
   # save results to csv
 
-  write.csv(resOrdered, paste0("/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/glass/deseq2results",i,".csv"))
+  write.csv(resOrdered, paste0("/nobackup/bs20chlb/outputdata/dea/seconddata/up-responders/subsample/deseq2results",i,".csv"))
   
 }
   
