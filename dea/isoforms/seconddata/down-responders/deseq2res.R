@@ -1,7 +1,8 @@
 library(DESeq2)
 library(ggplot2)
 library(ggrepel)
-library(bioma)
+library(biomaRt)
+library(dplyr)
 
 # load DESeq2 object as dds
 
@@ -32,11 +33,11 @@ resOrdered <- as.data.frame(resOrdered)
 
 merge <- merge(resOrdered, genelist, by.x = "row.names", by.y = "EnsID", all.x = TRUE)
 
-# again order by p-value
+# order by p-value
 
-merge <- merge[order(res$pvalue),]
+merge <- merge[order(merge$padj),]
 
-# move gene list to be second column
+# move gene name to be second column
 
 merge <- merge[,c(1,8,2:7)]
 
@@ -44,65 +45,177 @@ merge <- merge[,c(1,8,2:7)]
 
 summary(res)
 
+# remove NAs
+
+merge <- merge[!is.na(merge$padj),]
+
 # save results to csv
 
-# write.csv(merge, "/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/seconddata/deseq2results.csv")
+write.csv(merge, "/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/seconddata/down-responders/deseq2results.csv")
 
 # MA-plot
 
 # DESeq2::plotMA(res)
-
 # shrunken LFC
 # reslfc <- lfcShrink(dds, "tumourtype_R_vs_P", type = "apeglm")
 # DESeq2::plotMA(resLFC)
 
-# import summarydf
+# annotate transcripts with whether from a JARID2 gene
+
+# import jarid2 gene list
+jarid2 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/genes/jarid2.csv",
+                     header = F, sep = ",")
+
+# use ensembl database to attribute an ensembl transcript name to jarid2 gene Ens ID
+# this is required so that the results from DESeq2 can be matched with JARID2 gene status
+# using Ens transcript ID as an identifier
 
 bm <- useMart("ensembl")
 bm <- useDataset("hsapiens_gene_ensembl", mart = bm)
 EG2GO <- getBM(mart = bm, attribute = c("ensembl_gene_id", "ensembl_transcript_id", "external_gene_name"))
 
-jarid2 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/genes/jarid2.csv",
-                     header = F, sep = ",")
+jarid2 <- merge(jarid2, EG2GO[,c("ensembl_gene_id","external_gene_name")], by.x = "V1",
+                by.y = "ensembl_gene_id", all.x = TRUE)
 
-head(jarid2)
-EG2GO$JARID2 <- EG2GO$ensembl_gene_id %in% jarid2$V1
+jarid2 <- jarid2 %>% distinct(external_gene_name)
 
-head(EG2GO)
-
-
-# ggplot
-
-merge$EnsIDSimp <- sub("\\..*","",merge$Row.names)
-
-merge <- merge(merge, EG2GO[,c("ensembl_transcript_id", "JARID2")], 
-               by.x = "EnsIDSimp", by.y = "ensembl_transcript_id",
-               all.x = TRUE)
+merge$GeneIDSimp <- sub("-.*","",merge$GeneName)
+merge$jarid2.gene <- merge$GeneIDSimp %in% jarid2$external_gene_name
 
 
+# now need to label each transcript from DESeq2 results with information on whether it has a JARID2 start site
+# import jarid 2 tss transcripts
+
+jarid2.tss <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/InputData/isoforms/seconddata/jarid.tss.transcripts.csv",
+                       header = T)
+
+jarid2.tss <- c(t(jarid2.tss))
+
+
+merge$jarid2.tss <- merge$Row.names %in% jarid2.tss
+
+head(merge)
+# create volcano plot
 
 merge$threshold <- merge$padj < 0.05 & abs(merge$log2FoldChange) > 1
-merge$threshold <- ifelse(merge$threshold == 1 & merge$JARID2 == TRUE, "Sig - JARID2", 
-                          ifelse(merge$threshold == 1, "Sig", "Not Sig"))
+merge$label <- ifelse(merge$threshold == 1 & merge$jarid2.gene == TRUE & merge$jarid2.tss == TRUE,
+                      "Sig - JARID2 Gene & TSS",
+                      ifelse(merge$threshold == 1 & merge$jarid2.gene == TRUE & merge$jarid2.tss == FALSE,
+                             "Sig - JARID2 Gene Only",
+                             ifelse(merge$threshold == 1 & merge$jarid2.gene == FALSE & merge$jarid2.tss == TRUE,
+                                    "Sig - JARID2 Isoform Only",
+                                    ifelse(merge$threshold == 1 & merge$jarid2.gene == FALSE & merge$jarid2.tss == FALSE, 
+                                           "Sig",
+                                           ifelse(merge$threshold == 0 & merge$jarid2.gene == TRUE & merge$jarid2.tss == TRUE,
+                                                  "Not Sig - JARID2 Gene & TSS",
+                                                  ifelse(merge$threshold == 0 & merge$jarid2.gene == TRUE & merge$jarid2.tss == FALSE,
+                                                         "Not Sig - JARID2 Gene Only",
+                                                         ifelse(merge$threshold == 0 & merge$jarid2.gene == FALSE & merge$jarid2.tss == TRUE, 
+                                                                "Not Sig - JARID2 Isoform Only",
+                                                                ifelse(merge$threshold == 0 & merge$jarid2.gene == FALSE & merge$jarid2.tss == FALSE,
+                                                                       "Not Sig","null"))))))))
 
-merge <- merge[!is.na(merge$padj),]
-merge <- merge[!is.na(merge$threshold),]
 
 merge$top <- ifelse(-log10(merge$padj) > 5 | abs(merge$log2FoldChange) > 10,1,0)
 
-merge$threshold <- as.factor(merge$threshold)
+merge$label <- as.factor(merge$label)
 
 ggplot(merge) +
-  geom_point(aes(x = log2FoldChange, y=-log10(padj), colour = threshold)) +
+  geom_point(aes(x = log2FoldChange, y=-log10(padj), colour = label)) +
   geom_text_repel(aes(x = log2FoldChange, y=-log10(padj),
                       label = ifelse(top == 1, GeneName, "")), size = 3) +
-  ggtitle("Differential Isoform Expression - Down-Responders") +
+  ggtitle("Differential Isoform Expression - Up-Responders") +
   xlab("log2 fold change") +
   ylab("-log10 adjusted p-value") +
   geom_vline(xintercept = 1, linetype = 2) +
   geom_vline(xintercept = -1, linetype = 2) +
   geom_hline(yintercept = -log10(0.05), linetype = 2) +
-  scale_colour_manual(values=c("black","red", "green")) +
+  scale_colour_manual(values=c(8,7,6,5,4,3,2,1)) +
   theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
   theme_bw()
 
+# plot specific genes
+
+gene <- "SPOCK3" # set gene of interest
+
+merge.gene <- merge[grep(gene, merge$GeneName),]
+merge.gene$top <- 1
+merge.gene
+
+
+ggplot(merge.gene) +
+  geom_point(aes(x = log2FoldChange, y=-log10(padj), colour = label)) +
+  geom_text_repel(aes(x = log2FoldChange, y=-log10(padj),
+                      label = ifelse(top == 1, GeneName, "")), size = 3) +
+  ggtitle("Differential Isoform Expression - All Patients") +
+  xlab("log2 fold change") +
+  ylab("-log10 adjusted p-value") +
+  geom_vline(xintercept = 1, linetype = 2) +
+  geom_vline(xintercept = -1, linetype = 2) +
+  geom_hline(yintercept = -log10(0.05), linetype = 2) +
+  scale_colour_manual(values=c(1,2,3,4,5,6,7)) +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+
+
+# plot jarid only genes
+
+
+merge.jaridonly <- merge[merge$jarid2.gene == TRUE | merge$jarid2.tss == TRUE,]
+
+
+ggplot(merge.jaridonly) +
+  geom_point(aes(x = log2FoldChange, y=-log10(padj), colour = label)) +
+  geom_text_repel(aes(x = log2FoldChange, y=-log10(padj),
+                      label = ifelse(top == 1, GeneName, "")), size = 3) +
+  ggtitle("Differential Isoform Expression - Up-Responders") +
+  xlab("log2 fold change") +
+  ylab("-log10 adjusted p-value") +
+  geom_vline(xintercept = 1, linetype = 2) +
+  geom_vline(xintercept = -1, linetype = 2) +
+  geom_hline(yintercept = -log10(0.05), linetype = 2) +
+  scale_colour_manual(values=c(1,2,3,4,5,6,7)) +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+
+# mean padj and LFC for JARID2 and non-JARID2
+
+padj1 <- merge[merge$jarid2.gene == FALSE & merge$jarid2.tss == FALSE,]
+table(padj1$threshold)
+padj1 <- padj1[padj1$threshold == TRUE,]
+padj.mean1 <- mean(padj1$padj)
+lfc.mean1 <- mean(padj1$log2FoldChange)
+padj.mean1
+lfc.mean1
+
+padj2 <- merge[merge$jarid2.gene == TRUE & merge$jarid2.tss == TRUE,]
+table(padj2$threshold)
+padj2 <- padj2[padj2$threshold == TRUE,]
+padj.mean2 <- mean(padj2$padj)
+lfc.mean2 <- mean(padj2$log2FoldChange)
+padj.mean2
+lfc.mean2
+
+
+t.test(padj1$padj, padj2$padj, alternative = c("two.sided"), mu = 0, 
+       var.equal = FALSE, conf.level = 0.95, paired = FALSE)
+
+t.test(padj1$log2FoldChange, padj2$log2FoldChange, alternative = c("two.sided"), mu = 0, 
+       var.equal = FALSE, conf.level = 0.95, paired = FALSE)
+
+
+# chi-squared test
+
+test <- merge[merge$jarid2.tss == FALSE,]
+cont.table <- table(test$threshold, test$jarid2.gene == TRUE)
+cont.table 
+chisq.test(cont.table)
+
+# running tests to for association with direction of dysregulation
+
+merge$direction <- ifelse(merge$log2FoldChange < 0, "Down", "Up")
+
+nrow(merge[merge$threshold == TRUE & merge$jarid2.gene == FALSE & merge$jarid2.tss == FALSE & merge$direction == "Down",])
+
+
+?t.test

@@ -1,4 +1,9 @@
-library(stringr)
+# import library for pca plots
+
+library(factoextra)
+library(ggsci)
+
+# import glass data
 
 counts.full <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/glass/PvR_isoformCounts_filtered.txt",
                           header = T, sep = "\t")
@@ -58,20 +63,59 @@ jarid$direction <- ifelse(is.na(jarid$NES), jarid$ES, jarid$NES)
 jarid$responder.type <- ifelse(jarid$direction > 0, "Up", "Down")
 table(jarid$responder.type)
 head(jarid)
+jarid
+
+# create dataframe of sample and their corresponding responder type
+
+samples <- as.data.frame(sub(".{3}$","",rownames(counts.delta.t)))
+colnames(samples) <- "X"
+samples
+
+responder.type <- merge(samples, jarid[,c("Patient","responder.type","direction")], 
+                        by.x = "X", by.y = "Patient")
+
+responder.type <- responder.type[match(sub(".{3}$","",rownames(counts.delta.t)),responder.type$X),]
+table(responder.type$X == sub(".{3}$","",rownames(counts.delta.t)))
+table(responder.type$responder)
+responder.type$responder <- as.factor(responder.type$responder)
 
 # run pca
 
-pca.res <- prcomp(counts.delta, scale. = T)
-pca.res.rot <- pca.res$rotation
-pca.res.rot <- as.data.frame(pca.res.rot)
-rownames(pca.res.rot) <- gsub(".{3}$","",rownames(pca.res.rot))
+counts.delta.t <- t(counts.delta)
+rownames(counts.delta.t)
 
-# merge data
+pca.res <- prcomp(counts.delta.t)
 
 
-pca.res.rot <- merge(pca.res.rot, jarid[,c("Patient","responder.type")], by.x = "row.names", by.y = "Patient", all.x = TRUE)
-pca.res.rot$responder.type <- as.factor(pca.res.rot$responder.type)
+# plot results starting with PC1 vs. PC2
 
-plot(pca.res.rot$PC1,pca.res.rot$PC2,xlab="loading 1",ylab="loading 2", 
-     main="Loadings - LFC isoform expression", col = pca.res.rot$responder.type, pch = 16)
-legend(-0.4,0.4,c("Down","Up"), col = c(1,2), pch = 16)
+p <- fviz_pca_ind(pca.res, geom = "point",
+                  axes = c(1,2),
+                  pointsize = 3,  
+                  habillage = responder.type$responder.type,
+                  repel = TRUE,
+                  palette = "npg")
+
+ggpubr::ggpar(p,
+              title = "Principal Component Analysis",
+              subtitle = "LFC Isoforms",
+              caption = "Source: GLASS data",
+              legend.title = "Responder Type", legend.position = "top")
+
+# Make a scree plot
+
+fviz_screeplot(pca.res, addlabels = TRUE, ncp = 15,
+               main = "Scree plot of the first 15 PCs",
+               ggtheme = theme_minimal())
+
+
+# Hierarchical clustering
+
+d <- dist(counts.delta.t)
+h <- hclust(d, labels = c(t(responder.type$responder.type)))
+h$labels <- responder.type$responder.type
+plot(h)
+
+responder.type
+h$labels
+responder.type$responder.type
