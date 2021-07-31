@@ -5,7 +5,7 @@ library(ggsci)
 
 # import glass data
 
-counts.full <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/glass/PvR_isoformCounts_filtered.txt",
+counts.full <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/glass/glassfilter/PvR_isoformCounts_filtered.txt",
                           header = T, sep = "\t")
 head(counts.full)
 
@@ -65,6 +65,11 @@ table(jarid$responder.type)
 head(jarid)
 jarid
 
+# transpose counts matrix
+
+counts.delta.t <- t(counts.delta)
+rownames(counts.delta.t)
+
 # create dataframe of sample and their corresponding responder type
 
 samples <- as.data.frame(sub(".{3}$","",rownames(counts.delta.t)))
@@ -81,20 +86,19 @@ responder.type$responder <- as.factor(responder.type$responder)
 
 # run pca
 
-counts.delta.t <- t(counts.delta)
-rownames(counts.delta.t)
-
-pca.res <- prcomp(counts.delta.t)
+pca.res <- prcomp(counts.delta.t, scale. = TRUE)
 
 
 # plot results starting with PC1 vs. PC2
 
-p <- fviz_pca_ind(pca.res, geom = "point",
-                  axes = c(1,2),
+p <- fviz_pca_ind(pca.res, geom.ind = "point",
+                  axes = c(4,5),
                   pointsize = 3,  
-                  habillage = responder.type$responder.type,
+                  habillage = responder.type$responder,
                   repel = TRUE,
-                  palette = "npg")
+                  palette = "npg",
+                  mean.point = FALSE)
+
 
 ggpubr::ggpar(p,
               title = "Principal Component Analysis",
@@ -109,13 +113,20 @@ fviz_screeplot(pca.res, addlabels = TRUE, ncp = 15,
                ggtheme = theme_minimal())
 
 
-# Hierarchical clustering
+# extract isoforms
 
-d <- dist(counts.delta.t)
-h <- hclust(d, labels = c(t(responder.type$responder.type)))
-h$labels <- responder.type$responder.type
-plot(h)
+head(pca.res)
+topisoforms <- pca.res$rotation
+topisoforms <- as.data.frame(topisoforms)
 
-responder.type
-h$labels
-responder.type$responder.type
+# order the loadings for PC3
+
+topisoforms <- topisoforms[order(topisoforms$PC4, decreasing = T),]
+
+write.csv(topisoforms, "~/Documents/Semester3/Project/Results/resultsanalysis/PCA/topisoforms_GLASS.csv")
+
+head(topisoforms)
+
+
+
+

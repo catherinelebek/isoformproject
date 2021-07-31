@@ -65,3 +65,48 @@ ggplot(merge) +
   scale_colour_manual(values=c("black","red")) +
   theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
   theme_bw()
+
+
+# data for table
+
+# jarid2 genes
+
+jarid2 <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/genes/jarid2.csv",
+                     header = F, sep = ",")
+jarid2 <- c(t(jarid2))
+merge$EnsIDsimp <- sub("\\..*","",merge$Row.names)
+merge$jarid2 <- merge$EnsIDsimp %in% jarid2
+
+table(merge$jarid2)
+
+# all
+
+table(merge$padj < 0.05)
+table(merge$padj < 0.05 & merge$log2FoldChange > 0)
+table(merge$padj < 0.05 & merge$log2FoldChange < 0)
+
+
+table(merge$threshold == TRUE)
+table(merge$threshold == TRUE & merge$log2FoldChange > 0)
+table(merge$threshold == TRUE & merge$log2FoldChange < 0)
+
+# non-jarid2
+
+table(merge$padj < 0.05 & merge$jarid2 == FALSE)
+table(merge$padj < 0.05 & merge$log2FoldChange > 0 & merge$jarid2 == FALSE)
+table(merge$padj < 0.05 & merge$log2FoldChange < 0 & merge$jarid2 == FALSE)
+
+table(merge$threshold == TRUE & merge$jarid2 == FALSE)
+table(merge$threshold == TRUE & merge$log2FoldChange > 0 & merge$jarid2 == FALSE)
+table(merge$threshold == TRUE & merge$log2FoldChange < 0 & merge$jarid2 == FALSE)
+
+
+# jarid2
+
+table(merge$padj < 0.05 & merge$jarid2 == TRUE)
+table(merge$padj < 0.05 & merge$log2FoldChange > 0 & merge$jarid2 == TRUE)
+table(merge$padj < 0.05 & merge$log2FoldChange < 0 & merge$jarid2 == TRUE)
+
+table(merge$threshold == TRUE & merge$jarid2 == TRUE)
+table(merge$threshold == TRUE & merge$log2FoldChange > 0 & merge$jarid2 == TRUE)
+table(merge$threshold == TRUE & merge$log2FoldChange < 0 & merge$jarid2 == TRUE)

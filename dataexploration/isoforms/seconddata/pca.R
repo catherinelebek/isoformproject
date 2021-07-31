@@ -52,7 +52,7 @@ counts.primary <- apply(counts.primary, c(1,2), log2)
 counts.recurrent <- apply(counts.recurrent, c(1,2), log2)
 counts.delta <- counts.recurrent - counts.primary
 
-# Make sure there are no NA and inifinite values
+# Make sure there are no NA and infinite values
 
 table(rowSums(abs(counts.delta)) == Inf)
 table(is.na(counts.delta))
@@ -120,12 +120,13 @@ ggpubr::ggpar(p,
               subtitle = "LFC Isoforms",
               caption = "Source: Stead Data",
               xlab = "PC3", ylab = "PC4",
+              labels = rownames(pca.res$x),
               legend.title = "NES", legend.position = "top")
 
 
 # then plot PC1 vs PC3 and these appear to the best way to split the data by NES score
 
-p <- fviz_pca_ind(pca.res, geom = "point",
+p <- fviz_pca_ind(pca.res,
                   axes = c(1,3),
                   pointsize = 3,  
                   col.ind = responder.type$NES,
@@ -153,18 +154,15 @@ fviz_screeplot(pca.res, addlabels = TRUE, ncp = 15,
 head(pca.res)
 topisoforms <- pca.res$rotation
 topisoforms <- as.data.frame(topisoforms)
-topisoforms$PC3 <- abs(topisoforms$PC3)
-topisoforms <- topisoforms[order(topisoforms[,3], decreasing = TRUE),]
-write.csv(topisoforms, "/Users/catherinehogg/Documents/Semester3/Project/Results/resultsanalysis/topisoforms.csv",
-          row.names = T)
 
-plot(topisoforms[1:200,3])
+# order the loadings for PC3
 
-threshold <- topisoforms[(length(topisoforms$PC3))/10,3]
+topisoforms <- topisoforms[order(topisoforms$PC3, decreasing = T),]
+
+write.csv(topisoforms, "~/Documents/Semester3/Project/Results/resultsanalysis/PCA/topisoforms.csv")
+
 head(topisoforms)
 
-topisoforms[1:200,1]
-topisoforms[9000,1]
 
 
 

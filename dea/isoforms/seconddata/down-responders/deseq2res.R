@@ -218,4 +218,77 @@ merge$direction <- ifelse(merge$log2FoldChange < 0, "Down", "Up")
 nrow(merge[merge$threshold == TRUE & merge$jarid2.gene == FALSE & merge$jarid2.tss == FALSE & merge$direction == "Down",])
 
 
-?t.test
+# making data table #####
+
+# jarid2 genes
+
+nrow(merge)
+table(merge$jarid2.gene)
+table(merge$jarid2.tss)
+
+# all
+
+r1.1 <- table(merge$padj < 0.05)[2]
+r1.2 <- table(merge$padj < 0.05 & merge$log2FoldChange > 0)[2]
+r1.3 <- table(merge$padj < 0.05 & merge$log2FoldChange < 0)[2]
+
+r1.4 <- table(merge$threshold == TRUE)[2]
+r1.5 <- table(merge$threshold == TRUE & merge$log2FoldChange > 0)[2]
+r1.6 <- table(merge$threshold == TRUE & merge$log2FoldChange < 0)[2]
+
+# non-jarid2
+
+r2.1 <- table(merge$padj < 0.05 & merge$jarid2.gene == FALSE & merge$jarid2.tss == FALSE)[2]
+r2.2 <- table(merge$padj < 0.05 & merge$log2FoldChange > 0 & merge$jarid2.gene == FALSE & merge$jarid2.tss == FALSE)[2]
+r2.3 <- table(merge$padj < 0.05 & merge$log2FoldChange < 0 & merge$jarid2.gene == FALSE & merge$jarid2.tss == FALSE)[2]
+
+r2.4 <- table(merge$threshold == TRUE & merge$jarid2.gene == FALSE & merge$jarid2.tss == FALSE)[2]
+r2.5 <- table(merge$threshold == TRUE & merge$log2FoldChange > 0 & merge$jarid2.gene == FALSE & merge$jarid2.tss == FALSE)[2]
+r2.6 <- table(merge$threshold == TRUE & merge$log2FoldChange < 0 & merge$jarid2.gene == FALSE & merge$jarid2.tss == FALSE)[2]
+
+
+# jarid2 gene and tss
+
+r3.1 <- table(merge$padj < 0.05 & merge$jarid2.gene == TRUE & merge$jarid2.tss == TRUE)[2]
+r3.2 <- table(merge$padj < 0.05 & merge$log2FoldChange > 0 & merge$jarid2.gene == TRUE & merge$jarid2.tss == TRUE)[2]
+r3.3 <- table(merge$padj < 0.05 & merge$log2FoldChange < 0 & merge$jarid2.gene == TRUE & merge$jarid2.tss == TRUE)[2]
+
+r3.4 <- table(merge$threshold == TRUE & merge$jarid2.gene == TRUE & merge$jarid2.tss == TRUE)[2]
+r3.5 <- table(merge$threshold == TRUE & merge$log2FoldChange > 0 & merge$jarid2.gene == TRUE & merge$jarid2.tss == TRUE)[2]
+r3.6 <- table(merge$threshold == TRUE & merge$log2FoldChange < 0 & merge$jarid2.gene == TRUE & merge$jarid2.tss == TRUE)[2]
+
+# jarid2 gene only
+
+r4.1 <- table(merge$padj < 0.05 & merge$jarid2.gene == TRUE & merge$jarid2.tss == FALSE)[2]
+r4.2 <- table(merge$padj < 0.05 & merge$log2FoldChange > 0 & merge$jarid2.gene == TRUE & merge$jarid2.tss == FALSE)[2]
+r4.3 <- table(merge$padj < 0.05 & merge$log2FoldChange < 0 & merge$jarid2.gene == TRUE & merge$jarid2.tss == FALSE)[2]
+
+r4.4 <- table(merge$threshold == TRUE & merge$jarid2.gene == TRUE & merge$jarid2.tss == FALSE)[2]
+r4.5 <- table(merge$threshold == TRUE & merge$log2FoldChange > 0 & merge$jarid2.gene == TRUE & merge$jarid2.tss == FALSE)[2]
+r4.6 <- table(merge$threshold == TRUE & merge$log2FoldChange < 0 & merge$jarid2.gene == TRUE & merge$jarid2.tss == FALSE)[2]
+
+
+# jarid2 tss only
+
+r5.1 <- table(merge$padj < 0.05 & merge$jarid2.gene == FALSE & merge$jarid2.tss == TRUE)[2]
+r5.2 <- table(merge$padj < 0.05 & merge$log2FoldChange > 0 & merge$jarid2.gene == FALSE & merge$jarid2.tss == TRUE)[2]
+r5.3 <- table(merge$padj < 0.05 & merge$log2FoldChange < 0 & merge$jarid2.gene == FALSE & merge$jarid2.tss == TRUE)[2]
+
+r5.4 <- table(merge$threshold == TRUE & merge$jarid2.gene == FALSE & merge$jarid2.tss == TRUE)[2]
+r5.5 <- table(merge$threshold == TRUE & merge$log2FoldChange > 0 & merge$jarid2.gene == FALSE & merge$jarid2.tss == TRUE)[2]
+r5.6 <- table(merge$threshold == TRUE & merge$log2FoldChange < 0 & merge$jarid2.gene == FALSE & merge$jarid2.tss == TRUE)[2]
+
+# make a table
+
+test <- data.frame(Total1 = c(r1.1,r2.1,r3.1,r4.1,r5.1),
+                   Upregulated1 = c(r1.2,r2.2,r3.2,r4.2,r5.2),
+                   Downregulated2 = c(r1.3,r2.3,r3.3,r4.3,r5.3),
+                   Total2 = c(r1.4,r2.4,r3.4,r4.4,r5.4),
+                   Upregulated2 = c(r1.5,r2.5,r3.5,r4.5,r5.5),
+                   Downregulated2 = c(r1.6,r2.6,r3.6,r4.6,r5.6))
+
+test
+
+write_clip(test)
+
+

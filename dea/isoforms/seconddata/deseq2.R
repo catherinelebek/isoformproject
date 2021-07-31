@@ -60,8 +60,48 @@ boxplot(assay(vst))
 
 # identifying variance in top most differentially expressed genes
 
-plotPCA(vst, intgroup = c("ResponderType"))
-write_clip(p)
+p <- plotPCA(vst, intgroup = "Sample.Source")
+p
+pca.res <- p$data
+
+# comparing PC1 coordinates
+
+pca.pc1 <- data.frame(matrix(ncol = 2, nrow = nrow(pca.res)/2))
+patients <- unique(sub(".{2}$","",rownames(pca.res)))
+rownames(pca.pc1) <- patients
+colnames(pca.pc1) <- c("P","R")
+
+for (i in 1:length(patients)){
+  pca.pc1[i,1] <- pca.res[pca.res$patientid == patients[i] &
+                          pca.res$tumourtype == "P",1]
+  pca.pc1[i,2] <- pca.res[pca.res$patientid == patients[i] &
+                            pca.res$tumourtype == "R",1]
+}
+
+plot(pca.pc1$P, pca.pc1$R, pch = 16, col = "darkblue", xlab = "Primary PC1", ylab = "Recurrent PC1")
+ cor(pca.pc1$P, pca.pc1$R)
+t.test(pca.pc1$P, pca.pc1$R, paired = TRUE, alternative = "two.sided", mu = 0, 
+       var.equal = TRUE, conf.level= 0.95)
+
+# comparing PC2 coordinates
+
+pca.pc2 <- data.frame(matrix(ncol = 2, nrow = nrow(pca.res)/2))
+patients <- unique(sub(".{2}$","",rownames(pca.res)))
+rownames(pca.pc2) <- patients
+colnames(pca.pc2) <- c("P","R")
+
+for (i in 1:length(patients)){
+  pca.pc2[i,1] <- pca.res[pca.res$patientid == patients[i] &
+                            pca.res$tumourtype == "P",2]
+  pca.pc2[i,2] <- pca.res[pca.res$patientid == patients[i] &
+                            pca.res$tumourtype == "R",2]
+}
+
+plot(pca.pc2$P, pca.pc2$R, pch = 16, col = "darkblue", xlab = "Primary PC2", ylab = "Recurrent PC2")
+cor(pca.pc2$P, pca.pc2$R)
+t.test(pca.pc1$P, pca.pc1$R, paired = TRUE, alternative = "two.sided", mu = 0, 
+       var.equal = TRUE, conf.level= 0.95)
+# running DESeq2
 
 dds$tumourtype <- relevel(dds$tumourtype, ref = "P")
 

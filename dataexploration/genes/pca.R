@@ -68,7 +68,7 @@ dim(counts.delta.t)
 
 # run PCA
 
-pca.res <- prcomp(counts.delta.t, scale. = T)
+pca.res <- prcomp(counts.delta.t, scale. = F)
 
 # import metadata
 

@@ -1,7 +1,7 @@
 library(DESeq2)
 library(BiocParallel)
 
-counts <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/glass/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
+counts <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/glass/glassfilter/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
 # counts <- read.delim("/nobackup/bs20chlb/inputdata/seconddata/filter3/PvR_isoformCounts_filtered.txt",header = T, sep = "\t")
 rownames(counts) <- counts[,1]
 counts <- counts[,c(-1,-2)]
