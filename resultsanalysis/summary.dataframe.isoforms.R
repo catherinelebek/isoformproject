@@ -1,30 +1,38 @@
-# import libraries
+# This script is used to summarise all the results of the paired DEA for the in-house data
+# The results are summarised at the isoform level in a dataframe called "results"
+# This dataframe has 218,712 rows, corresponding to all the isoforms quantified
 
-library(tidyverse)
-library(VennDiagram)
-library(ggvenn)
+# import libraries ####
+
+library(tidyverse) # for manipulating data frames
+library(VennDiagram) # for plotting venn diagrams
+library(ggvenn) # for formatting venn diagrams
+library(clipr) # for copying data objects out of R Studio directly
 
 
-
-# full list of isoforms
+# full list of 218,712 isoforms ####
 
 isoforms <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/isoforms/seconddata/PvR_isoformCounts_all_LS_23062021.txt.txt",
                        header = T, sep = "\t")
+ 
+isoforms <- isoforms[,c(1,10)] # retaining just the isoform EnsID and gene name columns
 
-isoforms <- isoforms[,c(1,10)]
-
-# add in mapping data
+# add in mapping data to annotate transcripts with their corresponding gene ID and create results dataframe ####
 
 mapping <- read.delim("~/Documents/Semester3/Project/InputData/output.txt", header = F, sep = "\t") # gene-to-transcript IDs
 
 colnames(mapping) <- c("Gene.EnsID","Transcript.EnsID")
 
-mapping$Gene.EnsID.Simp <- sub("\\..*","",mapping$Gene.EnsID)
-mapping$Transcript.EnsID.Simp <- sub("\\..*","",mapping$Transcript.EnsID)
+mapping$Gene.EnsID.Simp <- sub("\\..*","",mapping$Gene.EnsID) # adding non-versioned gene Ens ID to mapping data
+mapping$Transcript.EnsID.Simp <- sub("\\..*","",mapping$Transcript.EnsID) # adding non-versioned isoform Ens ID to mapping data
 
-table(isoforms$EnsID %in% mapping$Transcript.EnsID)
+table(isoforms$EnsID %in% mapping$Transcript.EnsID) # check how many of the 218,712 isoforms appear in the mapping data
+
+# creating results data frame
 
 results <- left_join(isoforms, mapping, by = c("EnsID" = "Transcript.EnsID"))
+
+# import isoform paired DEA reuslts ####
 
 # isoform results all patients
 
@@ -47,37 +55,6 @@ all(isoforms.all$Row.names %in% isoforms$EnsID)
 all(isoforms.up$Row.names %in% isoforms$EnsID)
 all(isoforms.down$Row.names %in% isoforms$EnsID)
 
-# results data frame
-
-results$tested.all <- isoforms$EnsID %in% isoforms.all$Row.names
-results$tested.up <- isoforms$EnsID %in% isoforms.up$Row.names
-results$tested.down <- isoforms$EnsID %in% isoforms.down$Row.names
-
-head(results)
-
-colnames(results)[1] <- "Transcript.EnsID"
-
-# read in JARID2 data
-
-jarid2.gene <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/genes/jarid2.csv",
-                          header = F, sep = ",") # JARID2 gene IDs
-
-jarid2.gene <- c(t(jarid2.gene))
-
-jarid2.tss <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/InputData/isoforms/seconddata/jarid.tss.transcripts.csv",
-                       header = T) # JARID2 TSS transcript IDs
-
-jarid2.tss <- c(t(jarid2.tss))
-jarid2.tss <- sub("\\..*","",jarid2.tss)
-
-# add JARID2 data to results data frame
-
-results$jarid2.gene <- results$Gene.EnsID.Simp %in% jarid2.gene
-
-results$jarid2.tss <- results$Transcript.EnsID.Simp %in% jarid2.tss
-
-head(results)
-
 # make sure all the isoforms are unique
 
 nrow(results)
@@ -92,7 +69,38 @@ length(unique(isoforms.up$Row.names))
 nrow(isoforms.down)
 length(unique(isoforms.down$Row.names))
 
-# merge results
+# adding which isoforms were tested in each DEA ####
+
+results$tested.all <- isoforms$EnsID %in% isoforms.all$Row.names
+results$tested.up <- isoforms$EnsID %in% isoforms.up$Row.names
+results$tested.down <- isoforms$EnsID %in% isoforms.down$Row.names
+
+head(results)
+
+colnames(results)[1] <- "Transcript.EnsID" # rename first column to specify isoform (not gene) Ens ID
+
+# importJARID2 data ####
+
+jarid2.gene <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/InputData/genes/jarid2.csv",
+                          header = F, sep = ",") # JARID2 gene IDs
+
+jarid2.gene <- c(t(jarid2.gene))
+
+jarid2.tss <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/InputData/isoforms/seconddata/jarid.tss.transcripts.csv",
+                       header = T) # JARID2 TSS transcript IDs
+
+jarid2.tss <- c(t(jarid2.tss))
+jarid2.tss <- sub("\\..*","",jarid2.tss)
+
+# add JARID2 data to results data frame ####
+
+results$jarid2.gene <- results$Gene.EnsID.Simp %in% jarid2.gene # joining on non-versioned gene Ens ID
+
+results$jarid2.tss <- results$Transcript.EnsID.Simp %in% jarid2.tss # joining on non-versioned isoform Ens ID
+
+head(results)
+
+# add isoform DEA results to the main results data frame ####
 
 # all patients
 
@@ -114,7 +122,7 @@ colnames(results)[(n-1):n] <- c("LFC.down","padj.down")
 
 head(results)
 
-# import the gene-level data
+# import the gene-level DEA data ####
 
 # all patients
 
@@ -148,7 +156,7 @@ length(unique(genes.up$EnsID))
 nrow(genes.down)
 length(unique(genes.down$EnsID))
 
-# merge results
+# add gene DEA results to the main results data frame ####
 
 results <- merge(results, genes.all[,c("EnsID","log2FoldChange","padj")], by.x = "Gene.EnsID", by.y = "EnsID", all.x = TRUE)
 n <- ncol(results)
@@ -164,161 +172,118 @@ results <- merge(results, genes.down[,c("EnsID","log2FoldChange","padj")], by.x 
 n <- ncol(results)
 colnames(results)[(n-1):n] <- c("LFC.down.genes","padj.down.genes")
 
-# rearrange columns
-
-results <- results[,c(2,8,1,7,3,9,10,4,5,6,11:22)]
 head(results)
 
-# plot a venn diagram
+# rearrange columns ####
 
-# isoforms tested
+results <- results[,c(2,5,3,1,4,9,10,6,7,8,11:22)]
+head(results)
 
-ggplot(results, aes(A = tested.all, B = tested.up, C = tested.down)) +
-  geom_venn()
-
-# jarid2 genes vs. jarid2 genes & tss
-
-ggplot(results, aes(A = jarid2.gene, B = jarid2.tss)) +
-  geom_venn()
-
-# significant results
+# add columns to indicate which isoforms DE in each isoform-level DEA ####
 
 results$sig.all <- ifelse(is.na(results$padj.all), FALSE, ifelse(results$padj.all < 0.05, TRUE, FALSE))
 results$sig.up <- ifelse(is.na(results$padj.up), FALSE, ifelse(results$padj.up < 0.05, TRUE, FALSE))
 results$sig.down <- ifelse(is.na(results$padj.down), FALSE, ifelse(results$padj.down < 0.05, TRUE, FALSE))
 
-ggplot(results, aes(A = sig.all, B = sig.up, C = sig.down)) +
-  geom_venn()
+# column to indicate if isoform tested in both up and down responder DEA
 
-# jarid2 significant results
-
-ggplot(results, aes(A = jarid2.tss, B = sig.all, C = jarid2.gene)) +
-  geom_venn()
-
-ggplot(results, aes(A = jarid2.tss, B = sig.up, C = jarid2.gene)) +
-  geom_venn()
-
-ggplot(results, aes(A = jarid2.tss, B = sig.down, C = jarid2.gene)) +
-  geom_venn()
-
-# genes also significant
-
-results$sig.all.gene <- ifelse(is.na(results$padj.all.genes), FALSE, ifelse(results$padj.all.genes < 0.05, TRUE, FALSE))
-results$sig.up.gene <- ifelse(is.na(results$padj.up.genes), FALSE, ifelse(results$padj.up.genes < 0.05, TRUE, FALSE))
-results$sig.down.gene <- ifelse(is.na(results$padj.down.genes), FALSE, ifelse(results$padj.down.genes < 0.05, TRUE, FALSE))
-
-ggplot(results, aes(A = sig.all, B = sig.all.gene)) +
-  geom_venn()
-
-ggplot(results, aes(A = sig.up, B = sig.up.gene)) +
-  geom_venn()
-
-ggplot(results, aes(A = sig.down, B = sig.down.gene)) +
-  geom_venn()
-
-
-# summarise at the gene level
+results$tested.up.down <- ifelse(results$tested.up == TRUE & results$tested.down == TRUE, TRUE, FALSE)
 
 results$threshold.all <- results$sig.all == TRUE & abs(results$LFC.all) > 1
 results$threshold.up <- results$sig.up == TRUE & abs(results$LFC.up) > 1
 results$threshold.down <- results$sig.down == TRUE & abs(results$LFC.down) > 1
 
-results$match <- results$threshold.up != results$threshold.down
+# check results as expected
 
-sum(is.na(results$threshold.down))
+table(results$sig.all)
+table(results$sig.up)
+table(results$sig.down)
 
-gene.counts <- results %>% group_by(Gene.EnsID) %>% summarise(total.isoforms = n(), threshold.all = sum(threshold.all), 
-                                                              threshold.up = sum(threshold.up), threshold.down = sum(threshold.down),
-                                                              sig.all.gene = sum(sig.all.gene), sig.up.gene = sum(sig.up.gene),
-                                                              sig.down.gene = sum(sig.down.gene), 
-                                                              alt_splice = sum(match))
+table(results$threshold.all)
+table(results$threshold.up)
+table(results$threshold.down)
 
-gene.counts$isoform <- ifelse(gene.counts$threshold.all > 0, TRUE, FALSE)
 
-gene.counts$gene <- ifelse(gene.counts$sig.all.gene > 0, TRUE, FALSE)
+# add columns to indicate which genes DE in each gene-level DEA ####
+
+results$sig.all.gene <- ifelse(is.na(results$padj.all.genes), FALSE, ifelse(results$padj.all.genes < 0.05, TRUE, FALSE))
+results$sig.up.gene <- ifelse(is.na(results$padj.up.genes), FALSE, ifelse(results$padj.up.genes < 0.05, TRUE, FALSE))
+results$sig.down.gene <- ifelse(is.na(results$padj.down.genes), FALSE, ifelse(results$padj.down.genes < 0.05, TRUE, FALSE))
+
+# check results as expected
+
+table(results$sig.all.gene)
+table(results$sig.up.gene)
+table(results$sig.down.gene)
+
+# Venn Diagrams ####
+
+# isoforms tested - not included in final report
+
+ggplot(results, aes(A = tested.up, B = tested.down)) +
+  geom_venn(set_names = c("Up-responders","Down-responders")) +
+  theme_bw() +
+  ggpubr::rremove("grid") +
+  ggpubr::rremove("axis")
+
+# jarid2 genes vs. jarid2 genes & tss - not included in final report
+
+ggplot(results, aes(A = jarid2.gene, B = jarid2.tss)) +
+  geom_venn()
+
+# isoforms tested in both analyses and/or significant across up and/or down-responders - included in final report
+
+ggplot(results, aes(A = sig.up, B = sig.down, C = tested.up.down)) +
+  geom_venn(set_names = c("Up",
+                          "Down",
+                          "Both")) +
+  theme_bw() +
+  ggpubr::rremove("grid") +
+  ggpubr::rremove("axis")
+
+# isoforms in up and down-responders that are above the threshold - not included in final report
 
 ggplot(results, aes(A = threshold.up, B = threshold.down)) +
   geom_venn()
 
-# venn diagram at gene level
+# bar plot showing proportion of DEIs found in both responder types that are dysregulated in the same direction ####
+
+sig.results.both <- results[results$sig.up == TRUE & results$sig.down == TRUE,] # signficant resuls in both
+sig.results.both$direction <- ifelse(sig.results.both$LFC.up*sig.results.both$LFC.down > 0, "Same", "Different")
+
+p <- ggplot(data = sig.results.both, aes(direction)) +
+  geom_bar() +
+  theme_bw() +
+  scale_x_discrete(name = "Direction", limits = c("Same","Different")) +
+  theme(axis.text.x = element_text(size = "12"), 
+        axis.text.y = element_text(size = "12"),
+        axis.title.x = element_text(face = "bold", size = "12", margin = margin(t=20)),
+        axis.title.y = element_text(face = "bold", size = "12", margin = margin(r=20)),
+        plot.margin = unit(c(1,1,0.5,0.5), "cm")) +
+  ggpubr::rremove("grid")
+
+p
+
+clipr(sig.results.both[sig.results.both$direction == "Same",]) # copy out table of 15 isoforms that are dysregulated in the same direction
+
+# summarise at the gene level ####
+
+gene.counts <- results %>% group_by(Gene.EnsID) %>% summarise(total.isoforms = n(), threshold.all = sum(threshold.all), 
+                                                              threshold.up = sum(threshold.up), threshold.down = sum(threshold.down),
+                                                              sig.all.gene = sum(sig.all.gene), sig.up.gene = sum(sig.up.gene),
+                                                              sig.down.gene = sum(sig.down.gene))
 
 head(gene.counts)
 
-ggplot(gene.counts, aes(A = isoform, B = gene)) +
-  geom_venn()
 
-# list of isoforms without corresponding significant genes
+# isoforms that are significant/more significant in all patients compared to splitting out responders separately ####
 
-isoforms.only.up <- results[!is.na(results$padj.up),]
-isoforms.only.up <- results[results$sig.up == TRUE & results$sig.up.gene == FALSE,]
-isoforms.only.up.gene.counts <- isoforms.only.up %>% group_by(Gene.EnsID) %>% summarise(total.isoforms = n())
-isoforms.only.up.gene.counts <- isoforms.only.up.gene.counts[order(isoforms.only.up.gene.counts$total.isoforms, decreasing = T),]
-isoforms.only.up <- results[results$Gene.EnsID %in% isoforms.only.up.gene.counts$Gene.EnsID,]
-isoforms.only.up <- isoforms.only.up[isoforms.only.up$sig.up == TRUE,]
-isoforms.only.up <- isoforms.only.up[order(isoforms.only.up$padj.up),]
-head(isoforms.only.up)
-     
+all <- results[results$tested.up == TRUE & results$padj.all < results$padj.up & results$padj.all < results$padj.down,]
+all <- all[!is.na(all$padj.all),]
+all <- all[all$padj.all < 0.05,]
+head(all)
 
-isoforms.only.down <- results[!is.na(results$padj.down),]
-isoforms.only.down <- results[results$sig.down == TRUE & results$sig.down.gene == FALSE,]
-isoforms.only.down.gene.counts <- isoforms.only.down %>% group_by(Gene.EnsID) %>% summarise(total.isoforms = n())
-isoforms.only.down.gene.counts <- isoforms.only.down.gene.counts[order(isoforms.only.down.gene.counts$total.isoforms, decreasing = T),]
-isoforms.only.down <- results[results$Gene.EnsID %in% isoforms.only.down.gene.counts$Gene.EnsID,]
-isoforms.only.down <- isoforms.only.down[isoforms.only.down$sig.down == TRUE,]
-isoforms.only.down <- isoforms.only.down[order(isoforms.only.down$padj.down),]
-head(isoforms.only.down)
+all <- all[order(all$padj.all),]
+justall <- all[all$sig.up == FALSE & all$sig.down == FALSE,1]
 
-isoforms.only.all <- results[!is.na(results$padj.all),]
-isoforms.only.all <- results[results$sig.all == TRUE & results$sig.all.gene == FALSE,]
-isoforms.only.all.gene.counts <- isoforms.only.all %>% group_by(Gene.EnsID) %>% summarise(total.isoforms = n())
-isoforms.only.all.gene.counts <- isoforms.only.all.gene.counts[order(isoforms.only.all.gene.counts$total.isoforms, decreasing = T),]
-isoforms.only.all <- results[results$Gene.EnsID %in% isoforms.only.all.gene.counts$Gene.EnsID,]
-isoforms.only.all <- isoforms.only.all[isoforms.only.all$sig.all == TRUE,]
-isoforms.only.all <- isoforms.only.all[order(isoforms.only.all$padj.all),]
-head(isoforms.only.all)
-
-# add isoform only, no significant genes results to results data frame
-
-results$isoform.only.all <- results$Transcript.EnsID %in% isoforms.only.all$Transcript.EnsID
-results$isoform.only.up <- results$Transcript.EnsID %in% isoforms.only.up$Transcript.EnsID
-results$isoform.only.down <- results$Transcript.EnsID %in% isoforms.only.down$Transcript.EnsID
-
-ggplot(results, aes(A = isoform.only.all, B = isoform.only.up, C = isoform.only.down)) +
-  geom_venn()
-
-
-results[results$isoform.only.all == TRUE & results$isoform.only.up == TRUE & results$isoform.only.down,]
-
-# evidence of alternative splicing between responder types at recurrence - 92 genes, corresponding to 
-
-gene.counts.filter <- gene.counts[gene.counts$alt_splice > 1 & gene.counts$threshold.up > 0 & gene.counts$threshold.down > 0 &
-                                    gene.counts$sig.up.gene == 0 & gene.counts$sig.down.gene == 0,]
-
-isoforms.filter <- results[!is.na(results$Gene.EnsID),]
-isoforms.filter <- isoforms.filter[(isoforms.filter$Gene.EnsID %in% gene.counts.filter$Gene.EnsID),]
-isoforms.filter <- isoforms.filter[isoforms.filter$threshold.up == TRUE | isoforms.filter$threshold.down == TRUE,]
-
-unique(sub("-.*","",isoforms.filter$GeneName))
-
-isoforms.filter <- as.data.frame(isoforms.filter)
-
-alt_splice <- isoforms.filter %>% dplyr::count(Gene.EnsID.Simp, sort = TRUE) %>% filter(n > 1)
-
-isoforms.filter <- isoforms.filter[isoforms.filter$Gene.EnsID.Simp %in% alt_splice$Gene.EnsID.Simp,]
-isoforms.filter <- isoforms.filter[isoforms.filter$threshold.up != isoforms.filter$threshold.down,]
-
-
-
-                         
-isoforms.filter <- isoforms.filter[order(isoforms.filter$padj.up),]
-isoforms.filter[grep("EGFR",isoforms.filter$GeneName),]
-
-results[grep("SNHG14",results$GeneName),]
-
-test <- isoforms.filter %>% group_by(Gene.EnsID) %>% summarise(n())
-
-table(test[,2])
-
-isoforms.filter
-
-isoforms.filter[isoforms.filter$jarid2.tss == TRUE,]
+write.table(justall, "~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/justall.txt", row.names = FALSE, col.names = F)

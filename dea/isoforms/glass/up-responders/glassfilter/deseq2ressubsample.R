@@ -12,17 +12,10 @@ for (i in 1:10){
 sig$percentup <- sig$Up/sig$Significant
 
 
-sig[11,] <- c(2486, 1813, 673, 1813/673)
-sig[12,] <- c(332, 217,115, 217/332)
-
-sig$type <- c(rep("Subsample",10),"All up-responders", "All down-responders")
-sig$type <- as.factor(sig$type)
+up <- c(2486)
+down <- c(332)
 
 sig
-
-rownames(sig) <- c("1","2","3","4","5",
-                   "6","7","8","9","10",
-                   "U","D")
 
 
 mu <- mean(sig[1:10,1])
@@ -30,6 +23,8 @@ sdev <- sd(sig[1:10,1])
 
 tstat <- (mu - 332) / sqrt((sdev^2)/10)
 2*(1 - pt(tstat,9))
+
+(1 - pt(tstat,9))
 
 sig$percentup <- sig$Up/sig$Significant
 sig
@@ -43,10 +38,19 @@ CI_lower <- mu - tstat*quantile
 CI_upper <- mu + tstat*quantile
 
 
-barplot(sig$Significant, ylim = c(0,7000), col = "lightblue", pch = 16, names.arg = rownames(sig))
-abline(mu,0, col = "red")
-abline(CI_lower, 0, col = "red")
-abline(CI_upper, 0, col = "red")
-abline(332,0,col = "green")
+p <- ggplot(data = sig, aes(x=rownames(sig),y=Significant)) +
+  geom_col(fill = "#190F9733", color = "#190F97") +
+  theme_bw() +
+  scale_x_discrete(name = "Iteration", limits = c("1","2","3","4","5","6","7","8","9","10")) +
+  scale_y_continuous(name = "Significant Isoforms", limits = c(0,7000)) +
+  theme(axis.text.x = element_text(size = "12"), 
+        axis.text.y = element_text(size = "12"),
+        axis.title.x = element_text(face = "bold", size = "12", margin = margin(t=20)),
+        axis.title.y = element_text(face = "bold", size = "12", margin = margin(r=20)),
+        plot.margin = unit(c(1,1,0.5,0.5), "cm")) +
+  geom_hline(yintercept = up, color = "black", size = 1, linetype = "dotdash") +
+  geom_hline(yintercept = down, color = "black", size = 1, linetype = "dashed") +
+  geom_hline(yintercept = mu, color = "red", size = 1.2, line) +
+  ggpubr::rremove("grid")
 
-332/911
+p

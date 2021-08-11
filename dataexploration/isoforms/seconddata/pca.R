@@ -1,6 +1,7 @@
 # import library for pca plots
 
 library(factoextra)
+library(ggplot2)
 
 # import transcript filtered isoform counts data for all patients
 
@@ -80,7 +81,7 @@ metadata <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/InputData
 samples <- as.data.frame(rownames(counts.delta.t))
 colnames(samples) <- "X"
 
-responder.type <- merge(samples, metadata[,c("Patient.ID","NES")], 
+responder.type <- merge(samples, metadata[,c("Patient.ID","NES","RecurrentSubtype")], 
                         by.x = "X", by.y = "Patient.ID")
 
 responder.type <- responder.type[match(rownames(counts.delta.t),responder.type$X),]
@@ -88,40 +89,50 @@ table(responder.type$X == rownames(counts.delta.t))
 responder.type$responder <- ifelse(responder.type$NES < 0, "Down", "Up")
 table(responder.type$responder)
 responder.type$responder <- as.factor(responder.type$responder)
-
+responder.type$RecurrentSubtype <- as.factor(responder.type$RecurrentSubtype)
 # plot results starting with PC1 vs. PC2
 
-p <- fviz_pca_ind(pca.res, geom = "point",
-              axes = c(1,2),
-             pointsize = 3,  
-             col.ind = responder.type$NES,
-             repel = TRUE,
-             gradient.cols = c("#3933FF", "#E7B800", "#FC4E07"))
-
-ggpubr::ggpar(p,
-              title = "Principal Component Analysis",
-              subtitle = "LFC Isoforms",
-              caption = "Source: Stead Data",
-              xlab = "PC1", ylab = "PC2",
-              legend.title = "NES", legend.position = "top")
-
-
-# then plot PC3 vs PC4
 
 p <- fviz_pca_ind(pca.res, geom = "point",
-                  axes = c(3,4),
+                  axes = c(1,2),
+                  title = " ",
                   pointsize = 3,  
                   col.ind = responder.type$NES,
                   repel = TRUE,
-                  gradient.cols = c("#3933FF", "#E7B800", "#FC4E07"))
+                  gradient.cols = c("#3933FF", "#E7B800", "#FC4E07"),
+                  axes.linetype = NA)
 
 ggpubr::ggpar(p,
-              title = "Principal Component Analysis",
-              subtitle = "LFC Isoforms",
-              caption = "Source: Stead Data",
+              font.x = c(15,"bold"),
+              font.y = c(15,"bold"),
+              font.legend = 15,
+              font.tickslab = c(15),
+              xlab = "PC1", ylab = "PC2",
+              legend.title = "NES", legend.position = "top",
+              ggtheme = theme_bw()) +
+              ggpubr::rremove("grid")
+
+# then plot PC3 vs PC4
+
+
+p <- fviz_pca_ind(pca.res, geom = "point",
+                  axes = c(3,4),
+                  title = " ",
+                  pointsize = 3,  
+                  col.ind = responder.type$NES,
+                  repel = TRUE,
+                  gradient.cols = c("#3933FF", "#E7B800", "#FC4E07"),
+                  axes.linetype = NA)
+
+ggpubr::ggpar(p,
+              font.x = c(15,"bold"),
+              font.y = c(15,"bold"),
+              font.legend = 15,
+              font.tickslab = c(15),
               xlab = "PC3", ylab = "PC4",
-              labels = rownames(pca.res$x),
-              legend.title = "NES", legend.position = "top")
+              legend.title = "NES", legend.position = "top",
+              ggtheme = theme_bw()) +
+              ggpubr::rremove("grid")
 
 
 # then plot PC1 vs PC3 and these appear to the best way to split the data by NES score
@@ -143,9 +154,21 @@ ggpubr::ggpar(p,
 
 # Make a scree plot
 
-fviz_screeplot(pca.res, addlabels = TRUE, ncp = 15,
-               main = "Scree plot of the first 15 PCs",
-               ggtheme = theme_minimal())
+
+p <- fviz_screeplot(pca.res, 
+                    addlabels = TRUE, 
+                    ncp = 10,
+                    title = " ",
+                    barfill = "#190F9799",
+                    barcolor = "#190F97",
+                    xlab = "PC")
+
+ggpubr::ggpar(p,
+              font.x = c(15, "bold"),
+              font.y = c(15, "bold"),
+              font.tickslab = c(12),
+              ggtheme = theme_bw()) +
+              ggpubr::rremove("grid")
 
 ?fviz_screeplot
 
@@ -164,5 +187,23 @@ write.csv(topisoforms, "~/Documents/Semester3/Project/Results/resultsanalysis/PC
 head(topisoforms)
 
 
+# plot with subtype colouring
 
+p <- fviz_pca_ind(pca.res, geom = "point",
+                  axes = c(3,4),
+                  title = " ",
+                  pointsize = 3,  
+                  habillage = responder.type$RecurrentSubtype,
+                  repel = TRUE,
+                  palette = c("white", "#E7B800", "#FC4E07", "blue"),
+                  axes.linetype = NA)
 
+ggpubr::ggpar(p,
+              font.x = c(15,"bold"),
+              font.y = c(15,"bold"),
+              font.legend = 15,
+              font.tickslab = c(15),
+              xlab = "PC1", ylab = "PC2",
+              legend.title = "NES", legend.position = "top",
+              ggtheme = theme_bw()) +
+  ggpubr::rremove("grid")

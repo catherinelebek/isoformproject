@@ -49,6 +49,10 @@ mapping.count <- mapping %>% group_by(Gene.EnsID) %>% summarise(transcript.inc =
 mapping.count
 
 nrow(mapping.count[mapping.count$jarid2gene > mapping.count$jarid2tss,])
-mapping.count[mapping.count$jarid2gene > 0 & mapping.count$jarid2tss == 0,]
+nrow(mapping.count[mapping.count$jarid2gene > 0,])
+nrow(mapping.count[mapping.count$jarid2gene == mapping.count$jarid2tss & mapping.count$jarid2gene != 0,])
+nrow(mapping.count[mapping.count$jarid2gene > 0 & mapping.count$jarid2tss == 0,])
 
 2953/5234
+
+length(unique(mapping.count$Gene.EnsID))

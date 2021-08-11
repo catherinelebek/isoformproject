@@ -1,6 +1,7 @@
 # import library for pca plots
 
 library(factoextra)
+library(ggplot2)
 
 # import transcript filtered isoform counts data for all patients
 
@@ -94,51 +95,52 @@ responder.type$responder <- as.factor(responder.type$responder)
 
 p <- fviz_pca_ind(pca.res, geom = "point",
                   axes = c(1,2),
+                  title = " ",
                   pointsize = 3,  
                   col.ind = responder.type$NES,
                   repel = TRUE,
-                  gradient.cols = c("#3933FF", "#E7B800", "#FC4E07"))
+                  gradient.cols = c("#3933FF", "#E7B800", "#FC4E07"),
+                  axes.linetype = NA)
 
 ggpubr::ggpar(p,
-              title = "Principal Component Analysis",
-              subtitle = "LFC Genes",
-              caption = "Source: Stead Data",
+              font.x = c(15,"bold"),
+              font.y = c(15,"bold"),
+              font.legend = 15,
+              font.tickslab = c(15),
               xlab = "PC1", ylab = "PC2",
-              legend.title = "NES", legend.position = "top")
-
-
-# then plot PC3 vs PC4
-
-p <- fviz_pca_ind(pca.res, geom = "point",
-                  axes = c(3,4),
-                  pointsize = 3,  
-                  col.ind = responder.type$NES,
-                  repel = TRUE,
-                  gradient.cols = c("#3933FF", "#E7B800", "#FC4E07"))
-
-ggpubr::ggpar(p,
-              title = "Principal Component Analysis",
-              subtitle = "LFC Genes",
-              caption = "Source: Stead Data",
-              xlab = "PC3", ylab = "PC4",
-              legend.title = "NES", legend.position = "top")
+              legend.title = "NES", legend.position = "top",
+              ggtheme = theme_bw()) +
+              ggpubr::rremove("grid")
+              
 
 
 # Make a scree plot
 
-fviz_screeplot(pca.res, addlabels = TRUE, ncp = 15,
-               main = "Scree plot of the first 15 PCs",
-               ggtheme = theme_minimal())
+p <- fviz_screeplot(pca.res, 
+                    addlabels = TRUE, 
+                    ncp = 10,
+                    title = " ",
+                    barfill = "#190F9799",
+                    barcolor = "#190F97",
+                    xlab = "PC")
 
+ggpubr::ggpar(p,
+              font.x = c(15, "bold"),
+              font.y = c(15, "bold"),
+              font.tickslab = c(12),
+              ggtheme = theme_bw()) +
+              ggpubr::rremove("grid")
+         
 
+?fviz_screeplot
 
-# extract most important genes to PC2
+# extract most important genes to PC1
 
 head(pca.res)
 topgenes <- pca.res$rotation
 topgenes <- as.data.frame(topgenes)
-topgenes$PC2 <- abs(topgenes$PC2)
-topgenes <- topgenes[order(topgenes[,2], decreasing = TRUE),]
+topgenes$PC1 <- abs(topgenes$PC1)
+topgenes <- topgenes[order(topgenes[,1], decreasing = TRUE),]
 write.csv(topgenes, "/Users/catherinehogg/Documents/Semester3/Project/Results/resultsanalysis/topgenes.csv",
           row.names = T)
 

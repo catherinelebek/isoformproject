@@ -24,3 +24,4 @@ summary(res)
 
 write.csv(resOrdered, "/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/glass/down-responders/glassfilter/deseq2results.csv")
 
+table(resOrdered$padj < 0.05 & abs(resOrdered$log2FoldChange) > 1)

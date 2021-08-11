@@ -1,6 +1,6 @@
 # input
 
-input <- "topisoforms_GLASS.csv"
+input <- "topisoforms_glass.csv"
 
 # all isoforms
 
@@ -43,7 +43,7 @@ list.interest$GeneName <- sub("-.*","",list.interest$GeneName)
 
 # order based on actual values
 
-list.interest <- list.interest[order(list.interest$PC4, decreasing = T),]
+list.interest <- list.interest[order(list.interest$PC3, decreasing = T),]
 
 head(list.interest)
 
@@ -51,19 +51,23 @@ cols <- list.interest[is.na(list.interest$GeneName),1]
 
 # find most important isoforms
 
-plot(list.interest$PC4)
-qqnorm(list.interest$PC4)
-qqline(list.interest$PC4)
-abline(a = 0.0108, b = 0, col = "red")
+plot(list.interest$PC3)
+qqnorm(list.interest$PC3)
+qqline(list.interest$PC3)
+abline(a = 0.008, b = 0, col = "red")
+abline(a = -0.0085, b = 0, col = "red")
 
-?abline
+
+#PC3 = -0.0085, 0.006
+#PC4 = -0.0085, 0.006
+
 
 # get list of most important isoforms
 
-list.interest.top.up <- list.interest[list.interest$PC4 > 0.005,7]
+list.interest.top.up <- list.interest[list.interest$PC3 > 0.008,7]
+head(list.interest)
 
-
-list.interest.top.down <- list.interest[list.interest$PC4 < -0.006,7]
+list.interest.top.down <- list.interest[list.interest$PC3 < -0.0085,7]
 
 
 # create list of unique values

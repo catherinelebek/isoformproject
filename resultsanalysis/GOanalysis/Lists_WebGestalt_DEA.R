@@ -139,3 +139,24 @@ write.table(list.interest.sig.down.notjarid, paste0("~/Documents/Semester3/Proje
 write.table(list.interest.all, paste0("~/Documents/Semester3/Project/Results/resultsanalysis/GO_DEA/",output.all),
             sep = "\t", row.names = F, col.names = F, quote = F)
 
+
+# for all patients
+
+
+list.interest <- read.delim(paste0("~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/deseq2results.csv"),
+                            sep = ",", header = T)
+list.interest$GeneIDSimp <- sub("-.*","",list.interest$GeneName)
+list.interest.all <- list.interest$GeneIDSimp
+list.interest.all <- unique(list.interest.all)
+write.table(list.interest.all, paste0("~/Documents/Semester3/Project/Results/resultsanalysis/GO_DEA/all.isoforms.all.txt"),
+            sep = "\t", row.names = F, col.names = F, quote = F)
+
+list.interest.justall <-  read.delim(paste0("~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/justall.txt"),
+                                     sep = "\t", header = F)
+
+list.interest.justall <- merge(list.interest.justall, list.interest[,c("Row.names","GeneIDSimp")],
+                               by.x = "V1", by.y = "Row.names", all.x = TRUE)
+list.interest.justall <- list.interest.justall[,2]
+
+write.table(list.interest.justall, paste0("~/Documents/Semester3/Project/Results/resultsanalysis/GO_DEA/all.isoforms.justall.txt"),
+            sep = "\t", row.names = F, col.names = F, quote = F)

@@ -65,6 +65,13 @@ table(jarid$responder.type)
 head(jarid)
 jarid
 
+# remove outliers
+
+counts.delta <- counts.delta[,colnames(counts.delta) != "GLSS.MD.0023.R1" &
+                               colnames(counts.delta) != "GLSS.MD.0022.R1" &
+                               colnames(counts.delta) != "GLSS.SM.R083.R1"]
+
+dim(counts.delta)
 # transpose counts matrix
 
 counts.delta.t <- t(counts.delta)
@@ -84,6 +91,8 @@ table(responder.type$X == sub(".{3}$","",rownames(counts.delta.t)))
 table(responder.type$responder)
 responder.type$responder <- as.factor(responder.type$responder)
 
+
+
 # run pca
 
 pca.res <- prcomp(counts.delta.t, scale. = TRUE)
@@ -91,20 +100,27 @@ pca.res <- prcomp(counts.delta.t, scale. = TRUE)
 
 # plot results starting with PC1 vs. PC2
 
-p <- fviz_pca_ind(pca.res, geom.ind = "point",
-                  axes = c(4,5),
+p <- fviz_pca_ind(pca.res, geom.ind = c("point", "text"),
+                  axes = c(5,6),
                   pointsize = 3,  
+                  title = " ",
                   habillage = responder.type$responder,
+                  palette = c("#190F97", "#de3b04"),
                   repel = TRUE,
-                  palette = "npg",
+                  axes.linetype = NA,
                   mean.point = FALSE)
 
 
 ggpubr::ggpar(p,
-              title = "Principal Component Analysis",
-              subtitle = "LFC Isoforms",
-              caption = "Source: GLASS data",
-              legend.title = "Responder Type", legend.position = "top")
+              font.x = c(15,"bold"),
+              font.y = c(15,"bold"),
+              font.legend = 15,
+              font.tickslab = c(15),
+              xlab = "PC3", ylab = "PC4",
+              legend.title = "Responder-type", legend.position = "top",
+              ggtheme = theme_bw()) +
+              scale_shape_manual(values = c(16,16)) +           
+              ggpubr::rremove("grid")
 
 # Make a scree plot
 
@@ -121,7 +137,7 @@ topisoforms <- as.data.frame(topisoforms)
 
 # order the loadings for PC3
 
-topisoforms <- topisoforms[order(topisoforms$PC4, decreasing = T),]
+topisoforms <- topisoforms[order(topisoforms$PC3, decreasing = T),]
 
 write.csv(topisoforms, "~/Documents/Semester3/Project/Results/resultsanalysis/PCA/topisoforms_GLASS.csv")
 
