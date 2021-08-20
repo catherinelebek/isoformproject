@@ -203,6 +203,7 @@ p
 
 sources <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/seconddata/batch/deseq2results_sources.csv",
                     header = T, sep = ",")
+
 all <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/seconddata/batch/deseq2results_all.csv",
                 header = T, sep = ",")
 
@@ -211,6 +212,8 @@ mRNA <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/dea/i
 
 strandedtotal <- read.csv("/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/seconddata/batch/deseq2results_strandedtotal.csv",
                  header = T, sep = ",")
+
+
 
 all_res <- all[,2:3]
 colnames(all_res) <- c("EnsID","GeneName")
@@ -229,8 +232,38 @@ colnames(all_res)[(ncol(all_res)-1):ncol(all_res)] <- c("LFC.strandedtotal", "pa
 
 head(all_res)
 
-all_res[grep("SOD",all_res$GeneName),]
+all_res[grep("COL5A2",all_res$GeneName),]
 
+SOD2_transcripts
+SOD2_transcripts <- all_res[grep("SOD2",all_res$GeneName),1:2]
+SOD2_transcripts$EnsID <- sub("\\..","",SOD2_transcripts$EnsID)
+write.table(SOD2_transcripts,
+            "~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/batch/SOD2.txt",
+            row.names = F)
+
+
+
+COL5A2_transcripts <- all_res[grep("COL5A2",all_res$GeneName),1:2]
+COL5A2_transcripts$EnsID <- sub("\\..","",COL5A2_transcripts$EnsID)
+write.table(COL5A2_transcripts,
+            "~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/batch/COL5A2.txt",
+            row.names = F)
+
+COL5A2_transcripts
+
+NRXN3_transcripts <- all_res[grep("NRXN3",all_res$GeneName),1:2]
+NRXN3_transcripts$EnsID <- sub("\\..","",NRXN3_transcripts$EnsID)
+write.table(NRXN3_transcripts,
+            "~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/batch/NRXN3.txt",
+            row.names = F)
+
+FRYL_transcripts <- all_res[grep("FRYL",all_res$GeneName),1:2]
+FRYL_transcripts$EnsID <- sub("\\..","",FRYL_transcripts$EnsID)
+write.table(FRYL_transcripts,
+            "~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/batch/FRYL.txt",
+            row.names = F)
+
+FRYL_transcripts
 
 # volcano plot
 

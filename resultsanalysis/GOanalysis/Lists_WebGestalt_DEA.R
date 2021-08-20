@@ -1,6 +1,6 @@
 # first for up-responders #####
 
-input <- "up-responders/deseq2results.csv"
+input <- "up-responders/deseq2results_merge.csv"
 
 # all isoforms
 
@@ -11,7 +11,7 @@ output.all <- "up.isoforms.all.txt"
 output.sig.up <- "up.isoforms.sig.up.txt"
 output.sig.down <- "up.isoforms.sig.down.txt"
 
-# all isoforms above threshold and JARID2 associated
+# all isoforms above threshold and JARID2 associated, but without a jarid2 tss
 
 output.sig.up.jarid.ass <- "up.isoforms.sig.up.jarid.ass.txt"
 output.sig.down.jarid.ass <- "up.isoforms.sig.down.jarid.ass.txt"
@@ -29,7 +29,7 @@ output.sig.down.notjarid  <- "up.isoforms.sig.down.notjarid.txt"
 
 # now for down-responders ####
 
-input <- "down-responders/deseq2results.csv"
+input <- "down-responders/deseq2results_merge.csv"
 
 # all isoforms
 
@@ -61,40 +61,43 @@ output.sig.down.notjarid  <- "down.isoforms.sig.down.notjarid.txt"
 list.interest <- read.delim(paste0("~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/",input),
                           sep = ",", header = T)
 
+list.interest$GeneSymbol <- sub("-.*","",list.interest$GeneName)
+head(list.interest)
+
 list.interest.sig.up <- list.interest[list.interest$log2FoldChange > 1 &
-                                   list.interest$padj < 0.05,10]
+                                   list.interest$padj < 0.05,18]
 
 list.interest.sig.down <- list.interest[list.interest$log2FoldChange < -1 &
-                                        list.interest$padj < 0.05,10]
+                                        list.interest$padj < 0.05,18]
 
 list.interest.sig.up.jarid.ass <- list.interest[list.interest$log2FoldChange > 1 &
                                                   list.interest$padj < 0.05 &
-                                                  (list.interest$jarid2.gene == TRUE | list.interest$jarid2.tss == TRUE),10]
+                                                  (list.interest$jarid2.gene == TRUE & list.interest$jarid2.tss == FALSE),18]
 
 list.interest.sig.down.jarid.ass <- list.interest[list.interest$log2FoldChange < -1 &
                                                     list.interest$padj < 0.05 &
-                                                    (list.interest$jarid2.gene == TRUE | list.interest$jarid2.tss == TRUE),10]
+                                                    (list.interest$jarid2.gene == TRUE & list.interest$jarid2.tss == FALSE),18]
 
 
 list.interest.sig.up.jarid.tss <- list.interest[list.interest$log2FoldChange > 1 &
                                                  list.interest$padj < 0.05 &
-                                                 list.interest$jarid2.tss == TRUE,10]
+                                                 list.interest$jarid2.tss == TRUE,18]
 
 
 list.interest.sig.down.jarid.tss <- list.interest[list.interest$log2FoldChange < -1 &
                                                     list.interest$padj < 0.05 &
-                                                    list.interest$jarid2.tss == TRUE,10]
+                                                    list.interest$jarid2.tss == TRUE,18]
 
 list.interest.sig.up.notjarid <- list.interest[list.interest$log2FoldChange > 1 &
                                                   list.interest$padj < 0.05 &
                                                   list.interest$jarid2.tss == FALSE &
-                                                  list.interest$jarid2.gene == FALSE,10]
+                                                  list.interest$jarid2.gene == FALSE,18]
 
 
 list.interest.sig.down.notjarid <- list.interest[list.interest$log2FoldChange < -1 &
                                                  list.interest$padj < 0.05 &
                                                  list.interest$jarid2.tss == FALSE &
-                                                 list.interest$jarid2.gene == FALSE,10]
+                                                 list.interest$jarid2.gene == FALSE,18]
 
 
 
@@ -108,7 +111,7 @@ list.interest.sig.up.notjarid <- unique(list.interest.sig.up.notjarid)
 list.interest.sig.down.notjarid <- unique(list.interest.sig.down.notjarid)
 
 
-list.interest.all <- list.interest$GeneIDSimp
+list.interest.all <- list.interest$GeneSymbol
 list.interest.all <- unique(list.interest.all)
 
 

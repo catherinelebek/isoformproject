@@ -270,11 +270,17 @@ clipr(sig.results.both[sig.results.both$direction == "Same",]) # copy out table 
 
 gene.counts <- results %>% group_by(Gene.EnsID) %>% summarise(total.isoforms = n(), threshold.all = sum(threshold.all), 
                                                               threshold.up = sum(threshold.up), threshold.down = sum(threshold.down),
+                                                              sig.all = sum(sig.all), sig.up = sum(sig.up), sig.down = sum(sig.down),
                                                               sig.all.gene = sum(sig.all.gene), sig.up.gene = sum(sig.up.gene),
-                                                              sig.down.gene = sum(sig.down.gene))
+                                                              sig.down.gene = sum(sig.down.gene), sig.up.up = sum(LFC.up > 0, na.rm = TRUE & sig.up),
+                                                              sig.up.down = sum(sig.up & LFC.up < 0, na.rm = TRUE), sig.down.down = sum(sig.down & LFC.down < 0, na.rm = TRUE),
+                                                              sig.down.up = sum(sig.down & LFC.down > 0, na.rm = TRUE), sig.up.up.gene = sum(sig.up.gene & LFC.up.genes > 0),
+                                                              sig.up.down.gene = sum(sig.up.gene & LFC.up.genes < 0), sig.down.down.gene = sum(sig.down.gene & LFC.down.genes < 0),
+                                                              sig.down.up.gene = sum(sig.down.gene & LFC.down.genes > 0))
 
-head(gene.counts)
 
+gene.counts <- as.data.frame(gene.counts)
+write.csv(gene.counts, "~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/genecounts.csv")
 
 # isoforms that are significant/more significant in all patients compared to splitting out responders separately ####
 
@@ -287,3 +293,29 @@ all <- all[order(all$padj.all),]
 justall <- all[all$sig.up == FALSE & all$sig.down == FALSE,1]
 
 write.table(justall, "~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/justall.txt", row.names = FALSE, col.names = F)
+
+# pull in GLASS data
+
+glass.up <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/glass/up-responders/glassfilter/deseq2results.csv",
+                                    header = T, sep = ",")
+
+colnames(glass.up)[1] <- "EnsID"
+
+glass.down <- read.delim("/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/glass/down-responders/glassfilter/deseq2results.csv",
+                       header = T, sep = ",")
+
+colnames(glass.down)[1] <- "EnsID"
+
+results <- merge(results, glass.up[,c("EnsID","log2FoldChange","padj")], by.x = "Transcript.EnsID.Simp", by.y = "EnsID", all.x = TRUE)
+n <- ncol(results)
+colnames(results)[(n-1):n] <- c("LFC.glass.up","padj.glass.up")
+
+results <- merge(results, glass.down[,c("EnsID","log2FoldChange","padj")], by.x = "Transcript.EnsID.Simp", by.y = "EnsID", all.x = TRUE)
+n <- ncol(results)
+colnames(results)[(n-1):n] <- c("LFC.glass.down","padj.glass.down")
+
+head(results)
+
+
+
+knitr::write_bib(, "~/Documents/Semester3/Project/Report/citations/R.bib")

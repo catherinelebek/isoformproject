@@ -2,6 +2,7 @@
 
 library(factoextra)
 library(ggsci)
+library(patchwork)
 
 # import glass data
 
@@ -83,13 +84,12 @@ samples <- as.data.frame(sub(".{3}$","",rownames(counts.delta.t)))
 colnames(samples) <- "X"
 samples
 
-responder.type <- merge(samples, jarid[,c("Patient","responder.type","direction")], 
+responder.type <- merge(samples, jarid[,c("Patient","direction")], 
                         by.x = "X", by.y = "Patient")
 
 responder.type <- responder.type[match(sub(".{3}$","",rownames(counts.delta.t)),responder.type$X),]
 table(responder.type$X == sub(".{3}$","",rownames(counts.delta.t)))
-table(responder.type$responder)
-responder.type$responder <- as.factor(responder.type$responder)
+responder.type
 
 
 
@@ -98,36 +98,51 @@ responder.type$responder <- as.factor(responder.type$responder)
 pca.res <- prcomp(counts.delta.t, scale. = TRUE)
 
 
-# plot results starting with PC1 vs. PC2
+# plot results with PC3 vs. PC4
 
-p <- fviz_pca_ind(pca.res, geom.ind = c("point", "text"),
-                  axes = c(5,6),
-                  pointsize = 3,  
+p <- fviz_pca_ind(pca.res, geom = "point",
+                  axes = c(3,4),
                   title = " ",
-                  habillage = responder.type$responder,
-                  palette = c("#190F97", "#de3b04"),
+                  pointsize = 3,  
+                  col.ind = responder.type$direction,
                   repel = TRUE,
-                  axes.linetype = NA,
-                  mean.point = FALSE)
+                  gradient.cols = c("#3933FF", "#E7B800", "#FC4E07"),
+                  axes.linetype = NA)
 
-
-ggpubr::ggpar(p,
+p1 <- ggpubr::ggpar(p,
               font.x = c(15,"bold"),
               font.y = c(15,"bold"),
               font.legend = 15,
               font.tickslab = c(15),
               xlab = "PC3", ylab = "PC4",
-              legend.title = "Responder-type", legend.position = "top",
+              legend.title = "NES", legend.position = "top",
               ggtheme = theme_bw()) +
-              scale_shape_manual(values = c(16,16)) +           
-              ggpubr::rremove("grid")
+  ggpubr::rremove("grid")
+
+p1 
+
 
 # Make a scree plot
 
-fviz_screeplot(pca.res, addlabels = TRUE, ncp = 15,
-               main = "Scree plot of the first 15 PCs",
-               ggtheme = theme_minimal())
 
+p <- fviz_screeplot(pca.res, 
+                    addlabels = TRUE, 
+                    ncp = 10,
+                    title = " ",
+                    barfill = "#190F9799",
+                    barcolor = "#190F97",
+                    xlab = "PC")
+
+p2 <- ggpubr::ggpar(p,
+              font.x = c(15, "bold"),
+              font.y = c(15, "bold"),
+              font.tickslab = c(12),
+              ggtheme = theme_bw()) +
+  ggpubr::rremove("grid")
+
+p2
+
+p1 + p2
 
 # extract isoforms
 

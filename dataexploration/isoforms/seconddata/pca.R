@@ -90,6 +90,7 @@ responder.type$responder <- ifelse(responder.type$NES < 0, "Down", "Up")
 table(responder.type$responder)
 responder.type$responder <- as.factor(responder.type$responder)
 responder.type$RecurrentSubtype <- as.factor(responder.type$RecurrentSubtype)
+
 # plot results starting with PC1 vs. PC2
 
 

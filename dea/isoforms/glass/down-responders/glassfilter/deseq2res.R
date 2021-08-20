@@ -25,3 +25,7 @@ summary(res)
 write.csv(resOrdered, "/Users/catherinehogg/Documents/Semester3/Project/Results/dea/isoforms/glass/down-responders/glassfilter/deseq2results.csv")
 
 table(resOrdered$padj < 0.05 & abs(resOrdered$log2FoldChange) > 1)
+
+# Are any isoforms of YOD1 significant?
+resOrdered[rownames(resOrdered) == "ENST00000315927",] # YOD1-201
+resOrdered[rownames(resOrdered) == "ENST00000367084",] # YOD1-202
