@@ -12,6 +12,7 @@ jarid$NES <- as.numeric(jarid$NES)
 jarid$direction <- ifelse(is.na(jarid$NES), jarid$ES, jarid$NES)
 jarid$responder.type <- ifelse(jarid$direction > 0, "Up", "Down")
 jarid
+table(jarid$responder.type)
 
 # reformat jarid so . is -
 
@@ -42,19 +43,21 @@ glassdat <- glassdat[,keep]
 
 table(colnames(glassdat))
 
-# import list of isoforms analysed in up-responders from the stead data
+head(glassdat)
 
-stead.down <- read.delim("~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/down-responders/deseq2results.csv", header = T, sep = ",")
-stead.down <- stead.down$Row.names
+# import list of transcripts to remove
 
-stead.down <- sub("\\..*","",stead.down)
+lowexp <- read.delim("~/Documents/Semester3/Project/Results/filtered_data/isoforms/glass/down-responders/glassfilter/transcriptsomit.csv",
+                     header = T, sep = ",")
 
+lowexp <- c(t(lowexp))
+
+head(glassdat)
 # filter out the transcripts with low expression values
 
-keep <- glassdat[,1] %in% stead.down
+keep <- !glassdat[,1] %in% lowexp
 glassdat <- glassdat[keep,] # this is the final set of data
 
 
-
-write.table(glassdat, "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/glass/down-responders/PvR_isoformCounts_filtered.txt",
+write.table(glassdat, "/Users/catherinehogg/Documents/Semester3/Project/Results/filtered_data/isoforms/glass/down-responders/glassfilter/PvR_isoformCounts_filtered.txt",
             sep = "\t")
