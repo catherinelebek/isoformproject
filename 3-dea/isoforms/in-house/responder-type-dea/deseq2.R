@@ -1,3 +1,5 @@
+# This script runs isoform-level DEA between the primary tumours of up- and down-responders, and processes the results (including Volcano Plots)
+
 library(DESeq2)
 library(ggplot2)
 library(ggrepel)

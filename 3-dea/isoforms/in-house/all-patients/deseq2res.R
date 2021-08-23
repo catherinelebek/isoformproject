@@ -1,3 +1,5 @@
+# This script processes the results of the paired-sample DEA for all patients (in-house dataset)
+
 library(DESeq2)
 library(ggplot2)
 library(ggrepel)

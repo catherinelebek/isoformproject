@@ -1,3 +1,5 @@
+# This script processes the results of the paired-sample DEA for up-responders (in-house dataset)
+
 library(DESeq2)
 library(ggplot2)
 library(ggrepel)

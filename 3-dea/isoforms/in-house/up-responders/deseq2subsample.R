@@ -1,3 +1,5 @@
+# This scripts runs 10 iterations of isoform-level DEA based on sub-samples of 22 up-responder patients from the in-house dataset
+
 library(DESeq2)
 # library(BiocParallel)
 

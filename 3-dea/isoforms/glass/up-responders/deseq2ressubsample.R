@@ -1,3 +1,5 @@
+# This script processes the results of the sub-sampling DEA
+
 library(ggplot2)
 library(patchwork)
 

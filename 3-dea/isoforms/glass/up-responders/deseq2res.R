@@ -1,3 +1,5 @@
+# This script processes the results of the paired-sample DEA for up-responders (glass dataset)
+
 library(DESeq2)
 
 # load DESeq2 object as dds

@@ -1,3 +1,6 @@
+# This scripts runs 10 iterations of isoform-level DEA based on sub-samples of 9 up-responder patients from the GLASS dataset
+
+
 library(DESeq2)
 library(BiocParallel)
 

@@ -1,3 +1,5 @@
+# This script processes the results of the sub-sampling DEA
+
 library(ggplot2)
 
 # create empty data frame to store results from each iteration
