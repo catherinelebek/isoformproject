@@ -13,7 +13,7 @@ This repository contains the code for my Precision Medicine MSc (University of L
   * in-house - DEA based on in-house data (includes scripts for paired and responder-type DEA, also includes script for DEA based on sub-samples of up-responders)
   * glass - DEA based on glass data (includes script for DEA based on sub-sample of up-responders)
   * tpm_fpkm_check - per-patient bar plots of TPM (GLASS) and FPKM (in-house) expression values for specific isoforms
-  * master_deseq2_isoform_results.R - script used to produce Volcano Plots
+  * master_deseq2_isoform_results.R - script used to produce Volcano Plots for paired sample DEA results
 * **4-resultsanalysis** - .R scripts for further exploration of results including:
   * GO analysis - .R scripts for extracting lists of interesting genes and visualising overlap in GO terms between different GO enrichment analyses
   * summary.dataframe.isoforms.R - summary of all DEA results
