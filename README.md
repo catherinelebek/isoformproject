@@ -5,7 +5,7 @@ This repository contains the code for my MSc project titled "Investigating thera
 ### Contents
 
 * **1-dataprocessing** - .R scripts for filtering patients and gene/transcripts in the raw in-house and GLASS datasets. Three sub-folders:
-  * Sample_Filter_Logic - .R scripts for selecting patients to remove based on their Metadata and Sequencing metric values
+  * Sample_Filter_Logic - .R scripts for selecting patients to remove based on their metadata and sequencing metric values
   * Transcript_Filter_Logic - .R scripts for selecting genes/transcripts to remove based on low expression values
   * Filtered_Data - .R scripts to produce final filtered data ready for DEA
 * **2-dataexploration** - .R scripts for running PCA on in-house gene and in-house/GLASS isoform log2FC data
