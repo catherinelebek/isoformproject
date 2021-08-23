@@ -1,3 +1,5 @@
+# This script runs genelevel DEA using DESeq2 on the paired samples from 22 patients (in-house dataset)
+
 library(DESeq2)
 library(BiocParallel)
 

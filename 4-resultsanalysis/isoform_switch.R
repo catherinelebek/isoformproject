@@ -1,3 +1,5 @@
+# This script was using to identify DEGs with associated DEIs that showed evidence of isoform switching
+
 # for up-responders ####
 
 degoppdir <- read.csv("~/Documents/Semester3/Project/Results/dea/isoforms/seconddata/up-responders/degoppdir.csv", header = T)

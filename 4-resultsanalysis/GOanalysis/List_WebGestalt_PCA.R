@@ -1,3 +1,5 @@
+# This script is to select and output genes for use in BP GO term enrichment analysis based on results from PCA of log2FC in isoform-counts
+
 # input
 
 input <- "topisoforms_glass.csv"

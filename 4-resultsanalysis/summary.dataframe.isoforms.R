@@ -316,7 +316,3 @@ n <- ncol(results)
 colnames(results)[(n-1):n] <- c("LFC.glass.down","padj.glass.down")
 
 head(results)
-
-
-
-knitr::write_bib(, "~/Documents/Semester3/Project/Report/citations/R.bib")

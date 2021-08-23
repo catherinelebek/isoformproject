@@ -1,3 +1,7 @@
+# This script produces bar plots using TPM values (GLASS dataset) and FPKM values (in-house dataset) to run candidate-isoform expression checks between:
+# (a) primary and recurrent tumours, and
+# (b) the primary tumours of up- and down-responders
+
 library(tidyverse)
 library(reshape2)
 library(patchwork)
@@ -327,31 +331,7 @@ for (i in 1:nrow(transcripts.int)){
   
 }
 
-# SOD2 plots
 
-(plots[[1]] | plots[[2]] | plots[[3]]) /
-  (plots[[4]] | plots[[5]] | plots[6]) /
-  (plots[[7]] | plots[[8]] | plots[9])
-
-(plots[[10]] | plots[[11]] | plots[[12]]) /
-  (plots[[13]])
-
-plots[[19]]
-
-
-(plots[[1]] | plots[[2]]) 
-
-plots[[1]]
-
-fryl <- plots[[1]]
-col1 <- plots[[1]]
-col2 <- plots[[2]]
-nrxn3 <- plots[[1]]
-
-(col1 | col2) /
-  (nrxn3 | fryl )
-
-vtranscripts.int
 
 
 

@@ -1,3 +1,5 @@
+# This script is to select and output genes for use in BP GO term enrichment analysis based on results from paired-sample isoform-level DEAs
+
 # first for up-responders #####
 
 input <- "up-responders/deseq2results_merge.csv"

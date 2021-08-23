@@ -1,3 +1,5 @@
+# This script is to visualise the overlap between BP GO terms enriched among DEIs from the various paired-sample isoform-level DEA analyses
+
 library(VennDiagram) # for plotting venn diagrams
 library(ggvenn) # for formatting venn diagrams
 
@@ -77,4 +79,3 @@ ggplot(go_res, aes(A = down.down.jarid2.tss, B = down.down.jarid2.notass)) +
   ggpubr::rremove("axis")
 
 
-go_res[go_res$up.up.jarid2.tss == TRUE & go_res$up.up.jarid2.notass == FALSE,]
