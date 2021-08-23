@@ -1,6 +1,6 @@
 # Investigating therapy-driven changes in isoform expression in glioblastoma - supporting code :dna: :brain: 💻
 
-This repository contains the code for my MSc project titled "Investigating therapy-driven changes in isoform expression in glioblastoma".
+This repository contains the code for my Precision Medicine MSc (University of Leeds) project titled "Investigating therapy-driven changes in isoform expression in glioblastoma".
 
 ### Contents
 
@@ -23,4 +23,3 @@ This repository contains the code for my MSc project titled "Investigating thera
 
 
 N.B. All folders titled "archive" contain scripts not directly used to produce reported results.
-
