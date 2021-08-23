@@ -1,6 +1,6 @@
 # Investigating therapy-driven changes in isoform expression in glioblastoma - supporting code :dna: :brain:
 
-***This repository contains the code for my MSc project titled "Investigating therapy-driven changes in isoform expression in glioblastoma".***
+This repository contains the code for my MSc project titled "Investigating therapy-driven changes in isoform expression in glioblastoma".
 
 ### Structure
 
@@ -20,5 +20,4 @@
   * summary.dataframe.isoforms.R - summary of all DEA results
   * isoform_switch.R - script used to identify cases of isoform switching
   * TSS.R - scripts used to calculate % of JBS genes with transcripts without a JARID2 TSS
-
 
