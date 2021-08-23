@@ -21,3 +21,6 @@ This repository contains the code for my MSc project titled "Investigating thera
   * isoform_switch.R - script used to identify cases of isoform switching
   * TSS.R - scripts used to map JBSgene transcripts to JARID2 TSSs, and to calculate % of JBS genes with transcripts without a JARID2 TSS
 
+
+N.B. All folders titled "archive" contain scripts not directly used to produce reported results.
+
